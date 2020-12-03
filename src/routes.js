@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import React from 'react';
 import {BrowserRouter as Router, Route, Redirect} from 'react-router-dom';
 import DashboardLayout from 'src/layouts/DashboardLayout';
@@ -12,48 +13,50 @@ import RegisterView from 'src/views/auth/RegisterView';
 import SettingsView from 'src/views/settings/SettingsView';
 import {useAuth} from 'src/state/useAuth';
 
-let createRoute = function (path, element) {
-  return <Route path={path}>
+let createProtectedRoute = function (path, element) {
+  return <PrivateRoute path={path}>
     <DashboardLayout>
       {element}
     </DashboardLayout>
+  </PrivateRoute>;
+};
+
+let createUnprotectedRoute = function (path, element) {
+  return <Route path={path}>
+    <MainLayout>
+      {element}
+    </MainLayout>
   </Route>;
 };
 
 const routes = <Router>
-  {createRoute("/app/account", <AccountView/>)}
-  {createRoute("/app/customers", <CustomerListView/>)}
-  {createRoute("/app/dashboard", <DashboardView/>)}
-  {createRoute("/app/products", <ProductListView/>)}
-  {createRoute("/app/settings", <SettingsView/>)}
+  {createProtectedRoute("/app/account", <AccountView/>)}
+  {createProtectedRoute("/app/customers", <CustomerListView/>)}
+  {createProtectedRoute("/app/dashboard", <DashboardView/>)}
+  {createProtectedRoute("/app/products", <ProductListView/>)}
+  {createProtectedRoute("/app/settings", <SettingsView/>)}
   {/*<Route path='*' element={<Redirect to="/404"/>}/>*/}
-  <Route path='/' element={<MainLayout/>}>
-    <Route path='login' element={<LoginView/>}/>
-    <Route path='register' element={<RegisterView/>}/>
-    <Route path='404' element={<NotFoundView/>}/>
-    <Route path='/' element={<Redirect to="/app/dashboard"/>}/>
-    <Route path='*' element={<Redirect to="/404"/>}/>
-  </Route>
+  {createUnprotectedRoute("/login", <LoginView/>)}
+  {createUnprotectedRoute("/register", <RegisterView/>)}
+  {createUnprotectedRoute("/404", <NotFoundView/>)}
+  {<Route path="/" exact={true}>
+    <Redirect to="/app/dashboard"/>
+  </Route>}
+  {/*<Route path='*' element={<Redirect to="/404"/>}/>*/}
 </Router>;
 
 function PrivateRoute({children, ...rest}) {
   let auth = useAuth();
 
   return (
-    <Route
-      {...rest}
-      render={props => {
-        console.log(props);
-        return auth.user ? (
-          children
-        ) : (
-          <Redirect
-            to={{
-              pathname: "/login",
-            }}
-          />
-        )
-      }}
+    <Route {...rest}
+           render={props => {
+             return _.isNil(auth.user) ? (
+               <Redirect to="/login"/>
+             ) : (
+               children
+             )
+           }}
     />
   );
 }
