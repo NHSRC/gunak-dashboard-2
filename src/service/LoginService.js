@@ -70,10 +70,12 @@ export default class LoginService {
         if (verifyLoginResponse.status < 200 || verifyLoginResponse.status >= 300) {
           onFailure(verifyLoginResponse.statusText);
         } else {
-          localStorage.setItem('user', JSON.stringify(verifyLoginResponse.json()));
-          this.updateLocalStoredTime();
-          onSuccess();
+          return verifyLoginResponse.json();
         }
+      }).then((user) => {
+        localStorage.setItem('user', JSON.stringify(user));
+        this.updateLocalStoredTime();
+        onSuccess();
       }).catch((error) => {
         console.log(error);
         onFailure(error);

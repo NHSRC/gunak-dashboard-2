@@ -11,7 +11,7 @@ import NotFoundView from 'src/views/errors/NotFoundView';
 import ProductListView from 'src/views/product/ProductListView';
 import RegisterView from 'src/views/auth/RegisterView';
 import SettingsView from 'src/views/settings/SettingsView';
-import {useAuth} from 'src/state/useAuth';
+import LoginService from "./service/LoginService";
 
 let createProtectedRoute = function (path, element) {
   return <PrivateRoute path={path}>
@@ -46,15 +46,13 @@ const routes = <Router>
 </Router>;
 
 function PrivateRoute({children, ...rest}) {
-  let auth = useAuth();
-
   return (
     <Route {...rest}
            render={props => {
-             return _.isNil(auth.user) ? (
-               <Redirect to="/login"/>
-             ) : (
+             return LoginService.isLoggedIn() ? (
                children
+             ) : (
+               <Redirect to="/login"/>
              )
            }}
     />

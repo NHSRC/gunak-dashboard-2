@@ -1,5 +1,6 @@
+import _ from 'lodash';
 import React, {useEffect, useState} from "react";
-import {Link as RouterLink, useNavigate} from 'react-router-dom';
+import {Link as RouterLink, Redirect} from 'react-router-dom';
 import * as Yup from 'yup';
 import {Formik} from 'formik';
 import {
@@ -29,6 +30,10 @@ const LoginView = () => {
   const classes = useStyles();
   const [loginState, update] = useState(LoginState.newInstance());
 
+  if (loginState.loginStatus === LoginState.LOGIN_STATUS_SUCCESS) {
+    return <Redirect to="/"/>
+  }
+
   return (
     <Page
       className={classes.root}
@@ -47,11 +52,13 @@ const LoginView = () => {
               email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
               password: Yup.string().max(255).required('Password is required')
             })}
-            onSubmit={(values) => {
+            onSubmit={(values, {setSubmitting}) => {
               LoginService.login(values.email, values.password, () => {
-                // navigate('/app/dashboard', {replace: true});
+                LoginState.loginSucceeded(loginState);
+                update(LoginState.clone(loginState));
               }, (error) => {
                 LoginState.loginFailed(loginState, error);
+                setSubmitting(false);
                 update(LoginState.clone(loginState));
               });
             }}
@@ -84,7 +91,7 @@ const LoginView = () => {
                   onBlur={handleBlur}
                   onChange={handleChange}
                   type="email"
-                  value={values.email}
+                  value={_.isNil(values.email) ? '' : values.email}
                   variant="outlined"
                 />
                 <TextField
@@ -97,7 +104,7 @@ const LoginView = () => {
                   onBlur={handleBlur}
                   onChange={handleChange}
                   type="password"
-                  value={values.password}
+                  value={_.isNil(values.password) ? '' : values.password}
                   variant="outlined"
                 />
                 <Box my={2}>
@@ -113,7 +120,7 @@ const LoginView = () => {
                   </Button>
                 </Box>
                 <Box mb={3}>
-                  {loginState.loginFailed && <Typography color="error" variant="h3" display="block" align="center">
+                  {loginState.loginStatus === LoginState.LOGIN_STATUS_FAILED && <Typography color="error" variant="h3" display="block" align="center">
                     {loginState.errorMessage}
                   </Typography>}
                 </Box>
