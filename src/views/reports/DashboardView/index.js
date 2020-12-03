@@ -2,17 +2,20 @@ import React from 'react';
 import {
   Container,
   Grid,
-  makeStyles
+  makeStyles, Typography
 } from '@material-ui/core';
 import Page from 'src/components/Page';
-import Budget from './Budget';
+import DashboardBox from './DashboardBox';
 import LatestOrders from './LatestOrders';
 import LatestProducts from './LatestProducts';
 import Sales from './Sales';
 import TasksProgress from './TasksProgress';
-import TotalCustomers from './TotalCustomers';
 import TotalProfit from './TotalProfit';
 import TrafficByDevice from './TrafficByDevice';
+import MoneyIcon from '@material-ui/icons/Money';
+import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
+import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
+import ImportExportIcon from '@material-ui/icons/ImportExport';
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -36,42 +39,10 @@ const Dashboard = () => {
           container
           spacing={3}
         >
-          <Grid
-            item
-            lg={3}
-            sm={6}
-            xl={3}
-            xs={12}
-          >
-            <Budget/>
-          </Grid>
-          <Grid
-            item
-            lg={3}
-            sm={6}
-            xl={3}
-            xs={12}
-          >
-            <TotalCustomers/>
-          </Grid>
-          <Grid
-            item
-            lg={3}
-            sm={6}
-            xl={3}
-            xs={12}
-          >
-            <TasksProgress/>
-          </Grid>
-          <Grid
-            item
-            lg={3}
-            sm={6}
-            xl={3}
-            xs={12}
-          >
-            <TotalProfit/>
-          </Grid>
+          <DashboardBox title="MEDIAN SCORE" description="By - department, standard, area of concern, and overall" icon={<MoneyIcon/>}/>
+          <DashboardBox title="FACILITIES RANKING" description="Lorem ipsomosm aunamo anhkamos omsh" icon={<ArrowUpwardIcon/>}/>
+          <DashboardBox title="EXPORT ASSESSMENT DATA" description="View and download complete assessment" icon={<CloudDownloadIcon/>}/>
+          <DashboardBox title="BEST AND WORST AREAS" description="Check by departments and area of concern" icon={<ImportExportIcon/>}/>
           <Grid
             item
             lg={8}
