@@ -43,7 +43,7 @@ const Dashboard = () => {
             xl={3}
             xs={12}
           >
-            <Budget />
+            <Budget/>
           </Grid>
           <Grid
             item
@@ -52,7 +52,7 @@ const Dashboard = () => {
             xl={3}
             xs={12}
           >
-            <TotalCustomers />
+            <TotalCustomers/>
           </Grid>
           <Grid
             item
@@ -61,7 +61,7 @@ const Dashboard = () => {
             xl={3}
             xs={12}
           >
-            <TasksProgress />
+            <TasksProgress/>
           </Grid>
           <Grid
             item
@@ -70,7 +70,7 @@ const Dashboard = () => {
             xl={3}
             xs={12}
           >
-            <TotalProfit />
+            <TotalProfit/>
           </Grid>
           <Grid
             item
@@ -79,7 +79,7 @@ const Dashboard = () => {
             xl={9}
             xs={12}
           >
-            <Sales />
+            <Sales/>
           </Grid>
           <Grid
             item
@@ -88,7 +88,7 @@ const Dashboard = () => {
             xl={3}
             xs={12}
           >
-            <TrafficByDevice />
+            <TrafficByDevice/>
           </Grid>
           <Grid
             item
@@ -97,7 +97,7 @@ const Dashboard = () => {
             xl={3}
             xs={12}
           >
-            <LatestProducts />
+            <LatestProducts/>
           </Grid>
           <Grid
             item
@@ -106,7 +106,7 @@ const Dashboard = () => {
             xl={9}
             xs={12}
           >
-            <LatestOrders />
+            <LatestOrders/>
           </Grid>
         </Grid>
       </Container>

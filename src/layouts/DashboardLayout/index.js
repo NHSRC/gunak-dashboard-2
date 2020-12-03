@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { makeStyles } from '@material-ui/core';
 import NavBar from './NavBar';
 import TopBar from './TopBar';
+import LoginService from "../../service/LoginService";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -42,6 +43,7 @@ const DashboardLayout = ({children}) => {
       <NavBar
         onMobileClose={() => setMobileNavOpen(false)}
         openMobile={isMobileNavOpen}
+        user={LoginService.getUser()}
       />
       <div className={classes.wrapper}>
         <div className={classes.contentContainer}>

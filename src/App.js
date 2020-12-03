@@ -5,15 +5,12 @@ import GlobalStyles from 'src/components/GlobalStyles';
 import 'src/mixins/chartjs';
 import theme from 'src/theme';
 import routes from 'src/routes';
-import {ProvideAuth} from "./state/useAuth";
 
 const App = () => {
   return (
     <ThemeProvider theme={theme}>
       <GlobalStyles/>
-      <ProvideAuth>
-          {routes}
-      </ProvideAuth>
+      {routes}
     </ThemeProvider>
   );
 };

@@ -1,5 +1,6 @@
 import _ from 'lodash';
 import HTTPError from "./HTTPError";
+import User from "../model/User";
 
 const sessionDurationSeconds = 1000 * 60 * 60 * 24 * 5;
 const lastActionTimeStorageKey = "LAST_ACTION_TIME";
@@ -83,6 +84,6 @@ export default class LoginService {
   }
 
   static getUser() {
-    return localStorage.getItem('user');
+    return new User(JSON.parse(localStorage.getItem('user')));
   }
 }
