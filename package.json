@@ -4,6 +4,7 @@
   "licence": "MIT",
   "version": "1.0.0",
   "private": false,
+  "proxy": "http://localhost:6001",
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
@@ -44,8 +45,8 @@
     "react-feather": "^2.0.8",
     "react-helmet": "^6.1.0",
     "react-perfect-scrollbar": "^1.5.8",
-    "react-router": "^6.0.0-beta.0",
-    "react-router-dom": "^6.0.0-beta.0",
+    "react-router": "^5.2.0",
+    "react-router-dom": "^5.2.0",
     "react-scripts": "^3.4.1",
     "uuid": "^8.3.0",
     "yup": "^0.29.3"

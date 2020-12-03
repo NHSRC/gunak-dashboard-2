@@ -1,5 +1,5 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom';
+import {BrowserRouter as Router, Route, Redirect} from 'react-router-dom';
 import DashboardLayout from 'src/layouts/DashboardLayout';
 import MainLayout from 'src/layouts/MainLayout';
 import AccountView from 'src/views/account/AccountView';
@@ -10,31 +10,52 @@ import NotFoundView from 'src/views/errors/NotFoundView';
 import ProductListView from 'src/views/product/ProductListView';
 import RegisterView from 'src/views/auth/RegisterView';
 import SettingsView from 'src/views/settings/SettingsView';
+import {useAuth} from 'src/state/useAuth';
 
-const routes = [
-  {
-    path: 'app',
-    element: <DashboardLayout />,
-    children: [
-      { path: 'account', element: <AccountView /> },
-      { path: 'customers', element: <CustomerListView /> },
-      { path: 'dashboard', element: <DashboardView /> },
-      { path: 'products', element: <ProductListView /> },
-      { path: 'settings', element: <SettingsView /> },
-      { path: '*', element: <Navigate to="/404" /> }
-    ]
-  },
-  {
-    path: '/',
-    element: <MainLayout />,
-    children: [
-      { path: 'login', element: <LoginView /> },
-      { path: 'register', element: <RegisterView /> },
-      { path: '404', element: <NotFoundView /> },
-      { path: '/', element: <Navigate to="/app/dashboard" /> },
-      { path: '*', element: <Navigate to="/404" /> }
-    ]
-  }
-];
+let createRoute = function (path, element) {
+  return <Route path={path}>
+    <DashboardLayout>
+      {element}
+    </DashboardLayout>
+  </Route>;
+};
+
+const routes = <Router>
+  {createRoute("/app/account", <AccountView/>)}
+  {createRoute("/app/customers", <CustomerListView/>)}
+  {createRoute("/app/dashboard", <DashboardView/>)}
+  {createRoute("/app/products", <ProductListView/>)}
+  {createRoute("/app/settings", <SettingsView/>)}
+  {/*<Route path='*' element={<Redirect to="/404"/>}/>*/}
+  <Route path='/' element={<MainLayout/>}>
+    <Route path='login' element={<LoginView/>}/>
+    <Route path='register' element={<RegisterView/>}/>
+    <Route path='404' element={<NotFoundView/>}/>
+    <Route path='/' element={<Redirect to="/app/dashboard"/>}/>
+    <Route path='*' element={<Redirect to="/404"/>}/>
+  </Route>
+</Router>;
+
+function PrivateRoute({children, ...rest}) {
+  let auth = useAuth();
+
+  return (
+    <Route
+      {...rest}
+      render={props => {
+        console.log(props);
+        return auth.user ? (
+          children
+        ) : (
+          <Redirect
+            to={{
+              pathname: "/login",
+            }}
+          />
+        )
+      }}
+    />
+  );
+}
 
 export default routes;

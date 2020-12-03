@@ -1,7 +1,7 @@
-import React from 'react';
-import { Link as RouterLink, useNavigate } from 'react-router-dom';
+import React, {useEffect, useState} from "react";
+import {Link as RouterLink, useNavigate} from 'react-router-dom';
 import * as Yup from 'yup';
-import { Formik } from 'formik';
+import {Formik} from 'formik';
 import {
   Box,
   Button,
@@ -12,9 +12,9 @@ import {
   Typography,
   makeStyles
 } from '@material-ui/core';
-import FacebookIcon from 'src/icons/Facebook';
-import GoogleIcon from 'src/icons/Google';
 import Page from 'src/components/Page';
+import LoginService from "../../service/LoginService";
+import LoginState from "../../state/LoginState";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -27,7 +27,7 @@ const useStyles = makeStyles((theme) => ({
 
 const LoginView = () => {
   const classes = useStyles();
-  const navigate = useNavigate();
+  const [loginState, update] = useState(LoginState.newInstance());
 
   return (
     <Page
@@ -42,27 +42,29 @@ const LoginView = () => {
       >
         <Container maxWidth="sm">
           <Formik
-            initialValues={{
-              email: 'demo@devias.io',
-              password: 'Password123'
-            }}
+            initialValues={{}}
             validationSchema={Yup.object().shape({
               email: Yup.string().email('Must be a valid email').max(255).required('Email is required'),
               password: Yup.string().max(255).required('Password is required')
             })}
-            onSubmit={() => {
-              navigate('/app/dashboard', { replace: true });
+            onSubmit={(values) => {
+              LoginService.login(values.email, values.password, () => {
+                // navigate('/app/dashboard', {replace: true});
+              }, (error) => {
+                LoginState.loginFailed(loginState, error);
+                update(LoginState.clone(loginState));
+              });
             }}
           >
             {({
-              errors,
-              handleBlur,
-              handleChange,
-              handleSubmit,
-              isSubmitting,
-              touched,
-              values
-            }) => (
+                errors,
+                handleBlur,
+                handleChange,
+                handleSubmit,
+                isSubmitting,
+                touched,
+                values
+              }) => (
               <form onSubmit={handleSubmit}>
                 <Box mb={3}>
                   <Typography
@@ -70,61 +72,6 @@ const LoginView = () => {
                     variant="h2"
                   >
                     Sign in
-                  </Typography>
-                  <Typography
-                    color="textSecondary"
-                    gutterBottom
-                    variant="body2"
-                  >
-                    Sign in on the internal platform
-                  </Typography>
-                </Box>
-                <Grid
-                  container
-                  spacing={3}
-                >
-                  <Grid
-                    item
-                    xs={12}
-                    md={6}
-                  >
-                    <Button
-                      color="primary"
-                      fullWidth
-                      startIcon={<FacebookIcon />}
-                      onClick={handleSubmit}
-                      size="large"
-                      variant="contained"
-                    >
-                      Login with Facebook
-                    </Button>
-                  </Grid>
-                  <Grid
-                    item
-                    xs={12}
-                    md={6}
-                  >
-                    <Button
-                      fullWidth
-                      startIcon={<GoogleIcon />}
-                      onClick={handleSubmit}
-                      size="large"
-                      variant="contained"
-                    >
-                      Login with Google
-                    </Button>
-                  </Grid>
-                </Grid>
-                <Box
-                  mt={3}
-                  mb={1}
-                >
-                  <Typography
-                    align="center"
-                    color="textSecondary"
-                    variant="body1"
-                  >
-                    or login with email address
                   </Typography>
                 </Box>
                 <TextField
@@ -165,17 +112,14 @@ const LoginView = () => {
                     Sign in now
                   </Button>
                 </Box>
-                <Typography
-                  color="textSecondary"
-                  variant="body1"
-                >
-                  Don&apos;t have an account?
-                  {' '}
-                  <Link
-                    component={RouterLink}
-                    to="/register"
-                    variant="h6"
-                  >
+                <Box mb={3}>
+                  {loginState.loginFailed && <Typography color="error" variant="h3" display="block" align="center">
+                    {loginState.errorMessage}
+                  </Typography>}
+                </Box>
+                <Typography color="textSecondary" variant="body1">
+                  Don&apos;t have an account?{' '}
+                  <Link component={RouterLink} to="/register" variant="h6">
                     Sign up
                   </Link>
                 </Typography>
