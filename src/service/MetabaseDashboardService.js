@@ -1,14 +1,15 @@
 import {paramsToUrlFragment} from "../utils/FetchHelper";
 
 export default class MetabaseDashboardService {
-  static getMainDashboardIframeUrl(state, otherParams) {
-    let params = Object.assign({"state": state.name}, otherParams);
-    console.log(params);
-    return this.getIframeUrl(2, params);
+  static getMainDashboardIframeUrl(state, urlFragment) {
+    let params = Object.assign({"state": state.name}, urlFragment);
+    // let urlFragment = paramsToUrlFragment(params);
+    let dashboardId = _.isEmpty(urlFragment) ? 2 : 7;
+    return this.getIframeUrl(dashboardId, urlFragment);
   }
 
-  static getIframeUrl(dashboardId, params) {
-    let url = `/api/metabase-dashboard-url?dashboardId=${dashboardId}&${paramsToUrlFragment(params)}`;
+  static getIframeUrl(dashboardId, urlFragment) {
+    let url = `/api/metabase-dashboard-url?dashboardId=${dashboardId}&${urlFragment}`;
     const request = new Request(url, {
       method: 'GET'
     });

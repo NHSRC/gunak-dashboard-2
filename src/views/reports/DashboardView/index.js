@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {useParams} from 'react-router-dom';
+import {useLocation} from 'react-router-dom';
 import {Container, Grid, makeStyles} from '@material-ui/core';
 import Page from 'src/components/Page';
 import DashboardBox from './DashboardBox';
@@ -10,7 +10,6 @@ import ImportExportIcon from '@material-ui/icons/ImportExport';
 import MetabaseDashboardService from "../../../service/MetabaseDashboardService";
 import DashboardState from "../../../state/DashboardState";
 import CircularProgress from "@material-ui/core/CircularProgress/CircularProgress";
-import LoginService from "../../../service/LoginService";
 import DataReadService from "../../../service/DataReadService";
 
 const useStyles = makeStyles((theme) => ({
@@ -27,11 +26,10 @@ const Dashboard = () => {
 
   const [componentState, update] = useState(DashboardState.newInstance());
   // program, assessment_tool, assessment_type
-  const queryParams = useParams();
-
+  let searchString = useLocation().search;
   useEffect(() => {
     DataReadService.getState().then((state) => {
-      MetabaseDashboardService.getMainDashboardIframeUrl(state, queryParams).then((data) => {
+      MetabaseDashboardService.getMainDashboardIframeUrl(state, searchString.substring(1)).then((data) => {
         componentState.mainDashboardUrl = data;
         update(DashboardState.clone(componentState));
       }).catch((error) => {

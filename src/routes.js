@@ -32,7 +32,7 @@ let createUnprotectedRoute = function (path, element) {
 const routes = <Router>
   {createProtectedRoute("/app/account", <AccountView/>)}
   {createProtectedRoute("/app/customers", <CustomerListView/>)}
-  {createProtectedRoute("/app/dashboard/:program?/:assessment_tool?/:assessment_type?", <DashboardView/>)}
+  {createProtectedRoute("/app/dashboard", <DashboardView/>)}
   {createProtectedRoute("/app/products", <ProductListView/>)}
   {createProtectedRoute("/app/settings", <SettingsView/>)}
   {/*<Route path='*' element={<Redirect to="/404"/>}/>*/}
