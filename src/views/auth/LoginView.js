@@ -31,7 +31,9 @@ const LoginView = () => {
   const [loginState, update] = useState(LoginState.newInstance());
 
   if (loginState.loginStatus === LoginState.LOGIN_STATUS_SUCCESS) {
-    return <Redirect to="/"/>
+    return <Redirect to="/"/>;
+  } else if (loginState.loginStatus === LoginState.LOGIN_STATUS_NO_STATE_ACCESS) {
+    return <Redirect to="/noStateAccess"/>;
   }
 
   return (
@@ -53,8 +55,8 @@ const LoginView = () => {
               password: Yup.string().max(255).required('Password is required')
             })}
             onSubmit={(values, {setSubmitting}) => {
-              LoginService.login(values.email, values.password, () => {
-                LoginState.loginSucceeded(loginState);
+              LoginService.login(values.email, values.password, (user) => {
+                LoginState.loginSucceeded(loginState, user);
                 update(LoginState.clone(loginState));
               }, (error) => {
                 LoginState.loginFailed(loginState, error);

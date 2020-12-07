@@ -76,7 +76,7 @@ export default class LoginService {
       }).then((user) => {
         localStorage.setItem('user', JSON.stringify(user));
         this.updateLocalStoredTime();
-        onSuccess();
+        onSuccess(this.getUser());
       }).catch((error) => {
         console.log(error);
         onFailure(error);

@@ -7,7 +7,7 @@ import AccountView from 'src/views/account/AccountView';
 import CustomerListView from 'src/views/customer/CustomerListView';
 import DashboardView from 'src/views/reports/DashboardView';
 import LoginView from 'src/views/auth/LoginView';
-import NotFoundView from 'src/views/errors/NotFoundView';
+import ErrorView from 'src/views/errors/ErrorView';
 import ProductListView from 'src/views/product/ProductListView';
 import RegisterView from 'src/views/auth/RegisterView';
 import SettingsView from 'src/views/settings/SettingsView';
@@ -32,13 +32,16 @@ let createUnprotectedRoute = function (path, element) {
 const routes = <Router>
   {createProtectedRoute("/app/account", <AccountView/>)}
   {createProtectedRoute("/app/customers", <CustomerListView/>)}
-  {createProtectedRoute("/app/dashboard", <DashboardView/>)}
+  {createProtectedRoute("/app/dashboard/:program?/:assessment_tool?/:assessment_type?", <DashboardView/>)}
   {createProtectedRoute("/app/products", <ProductListView/>)}
   {createProtectedRoute("/app/settings", <SettingsView/>)}
   {/*<Route path='*' element={<Redirect to="/404"/>}/>*/}
   {createUnprotectedRoute("/login", <LoginView/>)}
   {createUnprotectedRoute("/register", <RegisterView/>)}
-  {createUnprotectedRoute("/404", <NotFoundView/>)}
+  {createUnprotectedRoute("/404", <ErrorView pageTitle={"404"} messageTitle={"404: The page you are looking for isn’t here"}
+                                             message={"You either tried non-existent URL or you came here by mistake."}/>)}
+  {createUnprotectedRoute("/noStateAccess", <ErrorView pageTitle={"No state access"} messageTitle={"Valid login. But no state access."}
+                                                       message={"Please contact administrator and ask them to provide you access to your state."}/>)}
   {<Route path="/" exact={true}>
     <Redirect to="/app/dashboard"/>
   </Route>}

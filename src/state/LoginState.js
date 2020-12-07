@@ -1,7 +1,10 @@
+import _ from 'lodash';
+
 export default class LoginState {
-  static LOGIN_STATUS_UNKNOWN = "UNKNOWN";
-  static LOGIN_STATUS_SUCCESS = "SUCCESS";
-  static LOGIN_STATUS_FAILED = "FAILED";
+  static LOGIN_STATUS_UNKNOWN = "unknown";
+  static LOGIN_STATUS_SUCCESS = "success";
+  static LOGIN_STATUS_FAILED = "failed";
+  static LOGIN_STATUS_NO_STATE_ACCESS = "no state access";
 
   static newInstance() {
     let loginState = new LoginState();
@@ -29,8 +32,8 @@ export default class LoginState {
     }
   }
 
-  static loginSucceeded(loginState) {
-    loginState.loginStatus = this.LOGIN_STATUS_SUCCESS;
+  static loginSucceeded(loginState, user) {
+    loginState.loginStatus = _.isNil(user) ? LoginState.LOGIN_STATUS_NO_STATE_ACCESS : LoginState.LOGIN_STATUS_SUCCESS;
     loginState.errorMessage = undefined;
   }
 }

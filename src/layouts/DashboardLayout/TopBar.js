@@ -1,11 +1,13 @@
 import React, {useState} from 'react';
-import {Link as RouterLink} from 'react-router-dom';
+import {Link as RouterLink, Redirect} from 'react-router-dom';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import {AppBar, Box, Hidden, IconButton, makeStyles, Toolbar, Typography} from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import InputIcon from '@material-ui/icons/Input';
 import Logo from 'src/components/Logo';
+import LoginService from "../../service/LoginService";
+import LoginState from "../../state/LoginState";
 
 const useStyles = makeStyles(() => ({
   root: {},
@@ -21,7 +23,11 @@ const TopBar = ({
   ...rest
 }) => {
   const classes = useStyles();
-  const [notifications] = useState([]);
+
+  const [state, update] = useState(LoginService.isLoggedIn);
+  if (!state) {
+    return <Redirect to="/"/>
+  }
 
   return (
     <AppBar
@@ -34,19 +40,21 @@ const TopBar = ({
           <Logo />
         </RouterLink>
         <Typography
-          color="colorPrimary"
+          color="white"
           variant="h2">Gunak Dashboard</Typography>
         <Box flexGrow={1} />
         <Hidden mdDown>
           <IconButton color="inherit">
-            <InputIcon />
+            <InputIcon onClick={() => {
+              LoginService.logout();
+              update(false);
+            }}/>
           </IconButton>
         </Hidden>
         <Hidden lgUp>
           <IconButton
             color="inherit"
-            onClick={onMobileNavOpen}
-          >
+            onClick={onMobileNavOpen}>
             <MenuIcon />
           </IconButton>
         </Hidden>
