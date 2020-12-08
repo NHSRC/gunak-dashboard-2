@@ -1,7 +1,7 @@
 import LoginService from "./LoginService";
 
 export default class DataReadService {
-  static getState(cb) {
+  static getState() {
     let user = LoginService.getUser();
     const getStateRequest = new Request(`/api/state/${user.getStateId()}`, {
       method: 'GET'

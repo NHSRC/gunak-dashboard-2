@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, {useEffect, useState} from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
 import {
@@ -12,36 +12,25 @@ import {
   TextField,
   makeStyles
 } from '@material-ui/core';
+import DataReadService from "../../../service/DataReadService";
+import ProfileState from "../ProfileState";
+import User from "../../../model/User";
 
-const states = [
-  {
-    value: 'alabama',
-    label: 'Alabama'
-  },
-  {
-    value: 'new-york',
-    label: 'New York'
-  },
-  {
-    value: 'san-francisco',
-    label: 'San Francisco'
-  }
-];
 
 const useStyles = makeStyles(() => ({
   root: {}
 }));
 
-const ProfileDetails = ({ className, ...rest }) => {
+const ProfileDetails = ({ className, user, ...rest }) => {
   const classes = useStyles();
-  const [values, setValues] = useState({
-    firstName: 'Katarina',
-    lastName: 'Smith',
-    email: 'demo@devias.io',
-    phone: '',
-    state: 'Alabama',
-    country: 'USA'
-  });
+  const [profileState, update] = useState(ProfileState.newInstance(user));
+
+  useEffect(() => {
+    DataReadService.getState().then((state) => {
+      profileState.state = state;
+      update(ProfileState.clone(profileState));
+    });
+  }, []);
 
   const handleChange = (event) => {
     setValues({
@@ -59,8 +48,7 @@ const ProfileDetails = ({ className, ...rest }) => {
     >
       <Card>
         <CardHeader
-          subheader="The information can be edited"
-          title="Profile"
+          title="Your profile"
         />
         <Divider />
         <CardContent>
@@ -80,7 +68,7 @@ const ProfileDetails = ({ className, ...rest }) => {
                 name="firstName"
                 onChange={handleChange}
                 required
-                value={values.firstName}
+                value={User.getFirstName(profileState.user)}
                 variant="outlined"
               />
             </Grid>
@@ -95,7 +83,7 @@ const ProfileDetails = ({ className, ...rest }) => {
                 name="lastName"
                 onChange={handleChange}
                 required
-                value={values.lastName}
+                value={User.getLastName(profileState.user)}
                 variant="outlined"
               />
             </Grid>
@@ -110,41 +98,11 @@ const ProfileDetails = ({ className, ...rest }) => {
                 name="email"
                 onChange={handleChange}
                 required
-                value={values.email}
+                value={User.getEmail(profileState.user)}
                 variant="outlined"
               />
             </Grid>
-            <Grid
-              item
-              md={6}
-              xs={12}
-            >
-              <TextField
-                fullWidth
-                label="Phone Number"
-                name="phone"
-                onChange={handleChange}
-                type="number"
-                value={values.phone}
-                variant="outlined"
-              />
-            </Grid>
-            <Grid
-              item
-              md={6}
-              xs={12}
-            >
-              <TextField
-                fullWidth
-                label="Country"
-                name="country"
-                onChange={handleChange}
-                required
-                value={values.country}
-                variant="outlined"
-              />
-            </Grid>
-            <Grid
+            {profileState.state && <Grid
               item
               md={6}
               xs={12}
@@ -154,22 +112,18 @@ const ProfileDetails = ({ className, ...rest }) => {
                 label="Select State"
                 name="state"
                 onChange={handleChange}
+                disabled={true}
                 required
                 select
-                SelectProps={{ native: true }}
-                value={values.state}
+                SelectProps={{native: true}}
+                value={profileState.state.name}
                 variant="outlined"
               >
-                {states.map((option) => (
-                  <option
-                    key={option.value}
-                    value={option.value}
-                  >
-                    {option.label}
-                  </option>
-                ))}
+                {[<option key={profileState.state.name} value={profileState.state.name}>
+                  {profileState.state.name}
+                </option>]}
               </TextField>
-            </Grid>
+            </Grid>}
           </Grid>
         </CardContent>
         <Divider />

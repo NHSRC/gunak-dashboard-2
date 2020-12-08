@@ -6,7 +6,7 @@ export default class User {
   }
 
   getFullName() {
-    return `${this.data["firstName"]} ${this.data["lastName"]}`;
+    return `${User.getFirstName(this)} ${User.getLastName(this)}`;
   }
 
   getStateId() {
@@ -15,5 +15,17 @@ export default class User {
     });
     if (statePrivilege.length === 0) return null;
     return statePrivilege[0]["stateId"];
+  }
+
+  static getFirstName(user) {
+    return user.data["firstName"];
+  }
+
+  static getLastName(user) {
+    return user.data["lastName"];
+  }
+
+  static getEmail(user) {
+    return user.data["email"];
   }
 }

@@ -2,7 +2,7 @@ import React, {useState} from 'react';
 import {Link as RouterLink, Redirect} from 'react-router-dom';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import {AppBar, Box, Hidden, IconButton, makeStyles, Toolbar, Typography} from '@material-ui/core';
+import {AppBar, Avatar, Box, Hidden, IconButton, makeStyles, Toolbar, Typography} from '@material-ui/core';
 import MenuIcon from '@material-ui/icons/Menu';
 import InputIcon from '@material-ui/icons/Input';
 import Logo from 'src/components/Logo';
@@ -11,16 +11,17 @@ import LoginService from "../../service/LoginService";
 const useStyles = makeStyles(() => ({
   root: {},
   avatar: {
-    width: 60,
-    height: 60
+    width: 30,
+    height: 30
   }
 }));
 
 const TopBar = ({
-  className,
-  onMobileNavOpen,
-  ...rest
-}) => {
+                  className,
+                  onMobileNavOpen,
+                  user,
+                  ...rest
+                }) => {
   const classes = useStyles();
 
   const [state, update] = useState(LoginService.isLoggedIn);
@@ -36,12 +37,12 @@ const TopBar = ({
     >
       <Toolbar>
         <RouterLink to="/">
-          <Logo />
+          <Logo/>
         </RouterLink>
         <Typography
           color="white"
           variant="h2">Gunak Dashboard</Typography>
-        <Box flexGrow={1} />
+        <Box flexGrow={1}/>
         <Hidden mdDown>
           <IconButton color="inherit">
             <InputIcon onClick={() => {
@@ -50,11 +51,17 @@ const TopBar = ({
             }}/>
           </IconButton>
         </Hidden>
+        <Avatar
+          className={classes.avatar}
+          component={RouterLink}
+          src={null}
+          to="/app/account"
+        />
         <Hidden lgUp>
           <IconButton
             color="inherit"
             onClick={onMobileNavOpen}>
-            <MenuIcon />
+            <MenuIcon/>
           </IconButton>
         </Hidden>
       </Toolbar>
@@ -64,7 +71,8 @@ const TopBar = ({
 
 TopBar.propTypes = {
   className: PropTypes.string,
-  onMobileNavOpen: PropTypes.func
+  onMobileNavOpen: PropTypes.func,
+  user: PropTypes.object.isRequired
 };
 
 export default TopBar;

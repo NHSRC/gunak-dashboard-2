@@ -53,19 +53,17 @@ const Dashboard = () => {
     >
       <Container maxWidth={false}>
         <Grid container spacing={3}>
-          <DashboardBox title="ASSESSMENT DONE" description="Assessment done in the state" icon={<ImportExportIcon/>}
+          <DashboardBox title="ASSESSMENT DONE" description="View assessments done in the state" icon={<ImportExportIcon/>}
                         linkedDashboard={MetabaseDashboards.Main} clickFn={switchToDashboard} isCurrent={MetabaseDashboards.Main === componentState.dashboardId}/>
           <DashboardBox title="ASSESSMENT STATISTICS" description="Average, median scores, etc - by department, standard, area of concern, and overall"
                         icon={<MoneyIcon/>} linkedDashboard={MetabaseDashboards.Statistics} clickFn={switchToDashboard}
                         isCurrent={MetabaseDashboards.Statistics === componentState.dashboardId}/>
-          <DashboardBox title="FACILITIES RANKING" description="Facilities ranked across state" icon={<ArrowUpwardIcon/>}
+          <DashboardBox title="FACILITIES RANKING" description="Facilities ranked across state by overall score" icon={<ArrowUpwardIcon/>}
                         linkedDashboard={MetabaseDashboards.FacilitiesRanking} clickFn={switchToDashboard}
                         isCurrent={MetabaseDashboards.FacilitiesRanking === componentState.dashboardId}/>
           <DashboardBox title="EXPORT ASSESSMENT DATA" description="View and download complete assessment" icon={<CloudDownloadIcon/>}
                         linkedDashboard={MetabaseDashboards.ExportAssessments} clickFn={switchToDashboard}
                         isCurrent={MetabaseDashboards.ExportAssessments === componentState.dashboardId}/>
-          {/*<Grid item lg={8} md={12} xl={9} xs={12}>*/}
-          {/*</Grid>*/}
         </Grid>
         <br/>
         {componentState.mainDashboardUrl ?

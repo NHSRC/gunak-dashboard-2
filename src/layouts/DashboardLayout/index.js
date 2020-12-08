@@ -1,6 +1,5 @@
-import React, { useState } from 'react';
-import { makeStyles } from '@material-ui/core';
-import NavBar from './NavBar';
+import React, {useState} from 'react';
+import {makeStyles} from '@material-ui/core';
 import TopBar from './TopBar';
 import LoginService from "../../service/LoginService";
 
@@ -18,7 +17,7 @@ const useStyles = makeStyles((theme) => ({
     overflow: 'hidden',
     paddingTop: 64,
     [theme.breakpoints.up('lg')]: {
-      paddingLeft: 256
+      paddingLeft: 0
     }
   },
   contentContainer: {
@@ -39,12 +38,7 @@ const DashboardLayout = ({children}) => {
 
   return (
     <div className={classes.root}>
-      <TopBar onMobileNavOpen={() => setMobileNavOpen(true)} />
-      <NavBar
-        onMobileClose={() => setMobileNavOpen(false)}
-        openMobile={isMobileNavOpen}
-        user={LoginService.getUser()}
-      />
+      <TopBar onMobileNavOpen={() => setMobileNavOpen(true)} user={LoginService.getUser()}/>
       <div className={classes.wrapper}>
         <div className={classes.contentContainer}>
           <div className={classes.content}>
