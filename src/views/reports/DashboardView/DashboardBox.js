@@ -9,6 +9,7 @@ import {
   Grid,
   Typography,
   colors,
+  Link,
   makeStyles
 } from '@material-ui/core';
 
@@ -30,13 +31,14 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const DashboardBox = ({className, title, icon, description, ...rest}) => {
+const DashboardBox = ({className, title, icon, description, linkedDashboard, clickFn, isCurrent, ...rest}) => {
   const classes = useStyles();
 
   return (
     <Grid item lg={3} sm={6} xl={3} xs={12}>
       <Card
         className={clsx(classes.root, className)}
+        style={{backgroundColor: isCurrent ? 'lightblue' : 'white'}}
         {...rest}
       >
         <CardContent>
@@ -51,11 +53,14 @@ const DashboardBox = ({className, title, icon, description, ...rest}) => {
               </Avatar>
             </Grid>
             <Grid item>
-              <Typography
+              <Link
+                component="button"
                 color="textSecondary"
                 gutterBottom
                 variant="h6"
-              >{title}</Typography>
+                underline="always"
+                onClick={() => clickFn()}
+              >{title}</Link>
               <Typography
                 color="textPrimary"
                 variant="h5">{description}</Typography>
@@ -71,7 +76,10 @@ DashboardBox.propTypes = {
   className: PropTypes.string,
   title: PropTypes.string.isRequired,
   icon: PropTypes.object.isRequired,
-  description: PropTypes.string.isRequired
+  description: PropTypes.string.isRequired,
+  linkedDashboard: PropTypes.number.isRequired,
+  isCurrent: PropTypes.bool.isRequired,
+  clickFn: PropTypes.func.isRequired
 };
 
 export default DashboardBox;

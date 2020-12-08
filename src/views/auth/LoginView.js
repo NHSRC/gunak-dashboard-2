@@ -15,7 +15,7 @@ import {
 } from '@material-ui/core';
 import Page from 'src/components/Page';
 import LoginService from "../../service/LoginService";
-import LoginState from "../../state/LoginState";
+import LoginState from "./LoginState";
 
 const useStyles = makeStyles((theme) => ({
   root: {

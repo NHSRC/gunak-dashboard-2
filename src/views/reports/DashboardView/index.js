@@ -8,9 +8,10 @@ import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import ImportExportIcon from '@material-ui/icons/ImportExport';
 import MetabaseDashboardService from "../../../service/MetabaseDashboardService";
-import DashboardState from "../../../state/DashboardState";
+import DashboardState from "../DashboardState";
 import CircularProgress from "@material-ui/core/CircularProgress/CircularProgress";
 import DataReadService from "../../../service/DataReadService";
+import MetabaseDashboards from "../MetabaseDashboards";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -24,12 +25,13 @@ const useStyles = makeStyles((theme) => ({
 const Dashboard = () => {
   const classes = useStyles();
 
-  const [componentState, update] = useState(DashboardState.newInstance());
+  let searchString = useLocation().search.substring(1);
+  const [componentState, update] = useState(DashboardState.newInstance(searchString));
   // program, assessment_tool, assessment_type
-  let searchString = useLocation().search;
   useEffect(() => {
     DataReadService.getState().then((state) => {
-      MetabaseDashboardService.getMainDashboardIframeUrl(state, searchString.substring(1)).then((data) => {
+      componentState.state = state;
+      MetabaseDashboardService.getDashboardIframeUrl(state, componentState.dashboardId, searchString).then((data) => {
         componentState.mainDashboardUrl = data;
         update(DashboardState.clone(componentState));
       }).catch((error) => {
@@ -37,7 +39,12 @@ const Dashboard = () => {
         update(DashboardState.clone(componentState));
       })
     });
-  }, []);
+  }, [componentState.dashboardId]);
+
+  const switchToDashboard = function (dashboardId) {
+    componentState.dashboardId = dashboardId;
+    update(DashboardState.clone(componentState));
+  };
 
   return (
     <Page
@@ -46,10 +53,17 @@ const Dashboard = () => {
     >
       <Container maxWidth={false}>
         <Grid container spacing={3}>
-          <DashboardBox title="MEDIAN SCORE" description="By - department, standard, area of concern, and overall" icon={<MoneyIcon/>}/>
-          <DashboardBox title="FACILITIES RANKING" description="Lorem ipsomosm aunamo anhkamos omsh" icon={<ArrowUpwardIcon/>}/>
-          <DashboardBox title="EXPORT ASSESSMENT DATA" description="View and download complete assessment" icon={<CloudDownloadIcon/>}/>
-          <DashboardBox title="BEST AND WORST AREAS" description="Check by departments and area of concern" icon={<ImportExportIcon/>}/>
+          <DashboardBox title="ASSESSMENT DONE" description="Assessment done in the state" icon={<ImportExportIcon/>}
+                        linkedDashboard={MetabaseDashboards.Main} clickFn={switchToDashboard} isCurrent={MetabaseDashboards.Main === componentState.dashboardId}/>
+          <DashboardBox title="ASSESSMENT STATISTICS" description="Average, median scores, etc - by department, standard, area of concern, and overall"
+                        icon={<MoneyIcon/>} linkedDashboard={MetabaseDashboards.Statistics} clickFn={switchToDashboard}
+                        isCurrent={MetabaseDashboards.Statistics === componentState.dashboardId}/>
+          <DashboardBox title="FACILITIES RANKING" description="Facilities ranked across state" icon={<ArrowUpwardIcon/>}
+                        linkedDashboard={MetabaseDashboards.FacilitiesRanking} clickFn={switchToDashboard}
+                        isCurrent={MetabaseDashboards.FacilitiesRanking === componentState.dashboardId}/>
+          <DashboardBox title="EXPORT ASSESSMENT DATA" description="View and download complete assessment" icon={<CloudDownloadIcon/>}
+                        linkedDashboard={MetabaseDashboards.ExportAssessments} clickFn={switchToDashboard}
+                        isCurrent={MetabaseDashboards.ExportAssessments === componentState.dashboardId}/>
           {/*<Grid item lg={8} md={12} xl={9} xs={12}>*/}
           {/*</Grid>*/}
         </Grid>

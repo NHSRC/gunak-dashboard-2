@@ -7,7 +7,6 @@ import MenuIcon from '@material-ui/icons/Menu';
 import InputIcon from '@material-ui/icons/Input';
 import Logo from 'src/components/Logo';
 import LoginService from "../../service/LoginService";
-import LoginState from "../../state/LoginState";
 
 const useStyles = makeStyles(() => ({
   root: {},
