@@ -15,13 +15,14 @@ import {
 import DataReadService from "../../../service/DataReadService";
 import ProfileState from "../ProfileState";
 import User from "../../../model/User";
+import UserProfileService from "../../../service/UserProfileService";
 
 
 const useStyles = makeStyles(() => ({
   root: {}
 }));
 
-const ProfileDetails = ({ className, user, ...rest }) => {
+const ProfileDetails = ({className, user, ...rest}) => {
   const classes = useStyles();
   const [profileState, update] = useState(ProfileState.newInstance(user));
 
@@ -33,10 +34,8 @@ const ProfileDetails = ({ className, user, ...rest }) => {
   }, []);
 
   const handleChange = (event) => {
-    setValues({
-      ...values,
-      [event.target.name]: event.target.value
-    });
+    User.updateField(profileState.user, event.target.name, event.target.value);
+    update(ProfileState.clone(profileState));
   };
 
   return (
@@ -50,7 +49,7 @@ const ProfileDetails = ({ className, user, ...rest }) => {
         <CardHeader
           title="Your profile"
         />
-        <Divider />
+        <Divider/>
         <CardContent>
           <Grid
             container
@@ -126,18 +125,15 @@ const ProfileDetails = ({ className, user, ...rest }) => {
             </Grid>}
           </Grid>
         </CardContent>
-        <Divider />
+        <Divider/>
         <Box
           display="flex"
           justifyContent="flex-end"
           p={2}
         >
-          <Button
-            color="primary"
-            variant="contained"
-          >
-            Save details
-          </Button>
+          <Button color="primary" variant="contained" onClick={() => {
+            UserProfileService.saveProfile(profileState.user);
+          }}>Save details</Button>
         </Box>
       </Card>
     </form>

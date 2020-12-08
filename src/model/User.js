@@ -28,4 +28,8 @@ export default class User {
   static getEmail(user) {
     return user.data["email"];
   }
+
+  static updateField(user, name, value) {
+    user.data[name] = value;
+  }
 }
