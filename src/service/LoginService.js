@@ -1,6 +1,6 @@
 import _ from 'lodash';
 import HTTPError from "./HTTPError";
-import User from "../model/User";
+import UserRepository from "./UserRepository";
 
 const sessionDurationSeconds = 1000 * 60 * 60 * 24 * 5;
 const lastActionTimeStorageKey = "LAST_ACTION_TIME";
@@ -20,7 +20,7 @@ export default class LoginService {
   }
 
   static clearLocalStorage() {
-    localStorage.removeItem('user');
+    UserRepository.removeUser();
     localStorage.removeItem(lastActionTimeStorageKey);
   }
 
@@ -28,13 +28,8 @@ export default class LoginService {
     this.clearLocalStorage();
   }
 
-  static authCheck() {
-    this.updateLocalStoredTime();
-    return localStorage.getItem('user') ? Promise.resolve() : Promise.reject();
-  }
-
   static isLoggedIn() {
-    return !_.isNil(localStorage.getItem('user'));
+    return !_.isNil(UserRepository.getUser());
   }
 
   static authFailed() {
@@ -73,8 +68,8 @@ export default class LoginService {
         } else {
           return verifyLoginResponse.json();
         }
-      }).then((user) => {
-        localStorage.setItem('user', JSON.stringify(user));
+      }).then((userJson) => {
+        UserRepository.setUser(userJson);
         this.updateLocalStoredTime();
         onSuccess(this.getUser());
       }).catch((error) => {
@@ -84,6 +79,6 @@ export default class LoginService {
   }
 
   static getUser() {
-    return new User(JSON.parse(localStorage.getItem('user')));
+    return UserRepository.getUser();
   }
 }

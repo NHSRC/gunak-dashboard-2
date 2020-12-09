@@ -1,4 +1,5 @@
 import User from "../model/User";
+import UserRepository from "./UserRepository";
 
 export default class UserProfileService {
   static saveProfile(user, oldPassword, newPassword) {
@@ -9,10 +10,14 @@ export default class UserProfileService {
     };
     const request = new Request(`/api/currentUser`, {
       method: 'POST',
-      body: requestObject
+      body: JSON.stringify(requestObject),
+      headers: new Headers({'Content-Type': 'application/JSON'})
     });
     return fetch(request).then((response) => {
-      console.log(response.statusText);
+      return response.json();
+    }).then((userJson) => {
+      UserRepository.setUser(userJson);
+      return UserRepository.getUser();
     });
   }
 }

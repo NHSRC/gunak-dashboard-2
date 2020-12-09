@@ -132,7 +132,10 @@ const ProfileDetails = ({className, user, ...rest}) => {
           p={2}
         >
           <Button color="primary" variant="contained" onClick={() => {
-            UserProfileService.saveProfile(profileState.user);
+            UserProfileService.saveProfile(profileState.user).then((user) => {
+              profileState.user = user;
+              update(profileState);
+            });
           }}>Save details</Button>
         </Box>
       </Card>
