@@ -12,6 +12,8 @@ import DashboardState from "../DashboardState";
 import CircularProgress from "@material-ui/core/CircularProgress/CircularProgress";
 import DataReadService from "../../../service/DataReadService";
 import MetabaseDashboards from "../MetabaseDashboards";
+import ApiCallView from "../../ApiCallView";
+import ApiResponse from "../../../model/ApiResponse";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -29,15 +31,17 @@ const Dashboard = () => {
   const [componentState, update] = useState(DashboardState.newInstance(searchString));
   // program, assessment_tool, assessment_type
   useEffect(() => {
-    DataReadService.getState().then((state) => {
-      componentState.state = state;
-      MetabaseDashboardService.getDashboardIframeUrl(state, componentState.dashboardId, searchString).then((data) => {
-        componentState.mainDashboardUrl = data;
+    DataReadService.getState().then((apiResponse) => {
+      if (ApiResponse.hasError(apiResponse)) {
+        componentState.apiResponse = apiResponse;
         update(DashboardState.clone(componentState));
-      }).catch((error) => {
-        componentState.error = error;
+        return;
+      }
+
+      MetabaseDashboardService.getDashboardIframeUrl(apiResponse.data, componentState.dashboardId, searchString).then((apiResponse2) => {
+        componentState.apiResponse = apiResponse2;
         update(DashboardState.clone(componentState));
-      })
+      });
     });
   }, [componentState.dashboardId]);
 
@@ -45,6 +49,9 @@ const Dashboard = () => {
     componentState.dashboardId = dashboardId;
     update(DashboardState.clone(componentState));
   };
+
+  let view = ApiCallView.handleApiCall(componentState.apiResponse);
+  if (!_.isNil(view)) return view;
 
   return (
     <Page
@@ -66,8 +73,8 @@ const Dashboard = () => {
                         isCurrent={MetabaseDashboards.ExportAssessments === componentState.dashboardId}/>
         </Grid>
         <br/>
-        {componentState.mainDashboardUrl ?
-          <iframe src={componentState.mainDashboardUrl} title='Metabase' style={{border: 'none', width: '100%', height: '1000px'}}/>
+        {componentState.apiResponse.data ?
+          <iframe src={componentState.apiResponse.data} title='Metabase' style={{border: 'none', width: '100%', height: '1000px'}}/>
           : <CircularProgress/>}
       </Container>
     </Page>

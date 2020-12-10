@@ -20,6 +20,7 @@ import CircularProgress from "@material-ui/core/CircularProgress/CircularProgres
 import {Redirect} from "react-router-dom";
 import ApiResponse from "../../../model/ApiResponse";
 import ErrorView from "../../errors/ErrorView";
+import ApiCallView from "../../ApiCallView";
 
 const useStyles = makeStyles(() => ({
   root: {}
@@ -31,7 +32,6 @@ const ProfileDetails = ({className, user, ...rest}) => {
 
   useEffect(() => {
     DataReadService.getState().then((apiResponse) => {
-      profileState.state = apiResponse.data;
       profileState.apiResponse = apiResponse;
       update(ProfileState.clone(profileState));
     });
@@ -42,12 +42,8 @@ const ProfileDetails = ({className, user, ...rest}) => {
     update(ProfileState.clone(profileState));
   };
 
-  if (_.isNil(profileState.apiResponse)) {
-    return <CircularProgress/>;
-  } else if (ApiResponse.hasError(profileState.apiResponse)) {
-    return <ErrorView pageTitle="Error during profile load" messageTitle={ApiResponse.getHumanError(profileState.apiResponse)}
-                      message={ApiResponse.getErrorResponse(profileState.apiResponse)}/>;
-  }
+  let view = ApiCallView.handleApiCall(profileState.apiResponse);
+  if (!_.isNil(view)) return view;
 
   return (
     <form

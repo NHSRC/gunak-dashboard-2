@@ -1,4 +1,5 @@
 import MetabaseDashboards from "./MetabaseDashboards";
+import _ from 'lodash';
 
 export default class DashboardState {
   static newInstance(searchString) {
@@ -9,9 +10,7 @@ export default class DashboardState {
 
   static clone(other) {
     let dashboardState = new DashboardState();
-    dashboardState.mainDashboardUrl = other.mainDashboardUrl;
-    dashboardState.error = null;
-    dashboardState.other = other.state;
+    dashboardState.apiResponse = other.apiResponse;
     dashboardState.dashboardId = other.dashboardId;
     return dashboardState;
   }
