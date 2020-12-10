@@ -1,13 +1,13 @@
 import {getText} from "../utils/FetchHelper";
 
 export default class MetabaseDashboardService {
-  static getDashboardIframeUrl(state, dashboardId, dashboardParams) {
+  static getResourceIframeUrl(state, resource, dashboardParams) {
     let searchParams = _.isEmpty(dashboardParams) ? `state=${state.name}` : `state=${state.name}&${dashboardParams}`;
-    return this.getIframeUrl(dashboardId, searchParams);
+    return this.getIframeUrl(resource, searchParams);
   }
 
-  static getIframeUrl(dashboardId, urlFragment) {
-    let url = `/api/metabase-dashboard-url?dashboardId=${dashboardId}&${urlFragment}`;
+  static getIframeUrl(resource, urlFragment) {
+    let url = `/api/metabase-${resource.type}-url?resourceId=${resource.id}&${urlFragment}`;
     return getText(url);
   }
 }

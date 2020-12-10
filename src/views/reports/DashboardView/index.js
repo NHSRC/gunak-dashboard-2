@@ -38,15 +38,15 @@ const Dashboard = () => {
         return;
       }
 
-      MetabaseDashboardService.getDashboardIframeUrl(apiResponse.data, componentState.dashboardId, searchString).then((apiResponse2) => {
+      MetabaseDashboardService.getResourceIframeUrl(apiResponse.data, componentState.resource, searchString).then((apiResponse2) => {
         componentState.apiResponse = apiResponse2;
         update(DashboardState.clone(componentState));
       });
     });
-  }, [componentState.dashboardId]);
+  }, [componentState.resource]);
 
-  const switchToDashboard = function (dashboardId) {
-    componentState.dashboardId = dashboardId;
+  const switchToDashboard = function (resource) {
+    componentState.resource = resource;
     update(DashboardState.clone(componentState));
   };
 
@@ -61,16 +61,16 @@ const Dashboard = () => {
       <Container maxWidth={false}>
         <Grid container spacing={3}>
           <DashboardBox title="ASSESSMENT DONE" description="View assessments done in the state" icon={<ImportExportIcon/>}
-                        linkedDashboard={MetabaseDashboards.Main} clickFn={switchToDashboard} isCurrent={MetabaseDashboards.Main === componentState.dashboardId}/>
+                        linkedDashboard={MetabaseDashboards.Main} clickFn={switchToDashboard} isCurrent={MetabaseDashboards.Main.id === componentState.resource.id}/>
           <DashboardBox title="ASSESSMENT STATISTICS" description="Average, median scores, etc - by department, standard, area of concern, and overall"
                         icon={<MoneyIcon/>} linkedDashboard={MetabaseDashboards.Statistics} clickFn={switchToDashboard}
-                        isCurrent={MetabaseDashboards.Statistics === componentState.dashboardId}/>
+                        isCurrent={MetabaseDashboards.Statistics === componentState.resource}/>
           <DashboardBox title="FACILITIES RANKING" description="Facilities ranked across state by overall score" icon={<ArrowUpwardIcon/>}
                         linkedDashboard={MetabaseDashboards.FacilitiesRanking} clickFn={switchToDashboard}
-                        isCurrent={MetabaseDashboards.FacilitiesRanking === componentState.dashboardId}/>
+                        isCurrent={MetabaseDashboards.FacilitiesRanking === componentState.resource}/>
           <DashboardBox title="EXPORT ASSESSMENT DATA" description="View and download complete assessment" icon={<CloudDownloadIcon/>}
                         linkedDashboard={MetabaseDashboards.ExportAssessments} clickFn={switchToDashboard}
-                        isCurrent={MetabaseDashboards.ExportAssessments === componentState.dashboardId}/>
+                        isCurrent={MetabaseDashboards.ExportAssessments === componentState.resource}/>
         </Grid>
         <br/>
         {componentState.apiResponse.data ?

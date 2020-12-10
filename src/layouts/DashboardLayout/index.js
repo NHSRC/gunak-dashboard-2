@@ -30,7 +30,6 @@ const useStyles = makeStyles((theme) => ({
     height: '100%',
     overflow: 'auto',
     display: 'flex',
-    alignItems: 'center',
     justifyContent: 'center'
   }
 }));
