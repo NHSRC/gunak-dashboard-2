@@ -1,11 +1,9 @@
 import LoginService from "./LoginService";
+import {get} from "../utils/FetchHelper";
 
 export default class DataReadService {
   static getState() {
     let user = LoginService.getUser();
-    const getStateRequest = new Request(`/api/state/${user.getStateId()}`, {
-      method: 'GET'
-    });
-    return fetch(getStateRequest).then((response) => response.json());
+    return get(`/api/state/${user.getStateId()}`);
   }
 }

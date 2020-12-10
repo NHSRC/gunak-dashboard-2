@@ -6,7 +6,9 @@ export default class UserProfileService {
     let requestObject = {
       firstName: User.getFirstName(user),
       lastName: User.getLastName(user),
-      email: User.getEmail(user)
+      email: User.getEmail(user),
+      oldPassword: oldPassword,
+      newPassword: newPassword,
     };
     const request = new Request(`/api/currentUser`, {
       method: 'POST',

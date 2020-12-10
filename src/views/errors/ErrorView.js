@@ -1,4 +1,5 @@
 import React from 'react';
+import {useLocation} from 'react-router-dom';
 import {
   Box,
   Container,
@@ -25,6 +26,7 @@ const useStyles = makeStyles((theme) => ({
 
 const ErrorView = ({pageTitle, messageTitle, message}) => {
   const classes = useStyles();
+  let searchString = useLocation().search.substring(1);
 
   return (
     <div>
@@ -42,14 +44,15 @@ const ErrorView = ({pageTitle, messageTitle, message}) => {
             <Typography
               align="center"
               color="textPrimary"
-              variant="h1"
+              variant="h3"
             >
               {messageTitle}
             </Typography>
+            <br/>
             <Typography
               align="center"
               color="textPrimary"
-              variant="subtitle2"
+              variant="h4"
             >
               {message}
             </Typography>
@@ -62,8 +65,8 @@ const ErrorView = ({pageTitle, messageTitle, message}) => {
 
 ErrorView.propTypes = {
   pageTitle: PropTypes.string.isRequired,
-  messageTitle: PropTypes.string.isRequired,
-  message: PropTypes.string.isRequired
+  messageTitle: PropTypes.string,
+  message: PropTypes.string
 };
 
 export default ErrorView;
