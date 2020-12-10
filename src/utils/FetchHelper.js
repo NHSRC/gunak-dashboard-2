@@ -7,7 +7,7 @@ export function paramsToUrlFragment(params) {
   return _.join(_.filter(paramStringArray, (x) => !_.isEmpty(x)), '&');
 }
 
-export function get(url) {
+export function getJson(url) {
   const getRequest = new Request(url, {
     method: 'GET'
   });
@@ -29,6 +29,32 @@ export function get(url) {
     })
     .then((obj) => {
       apiResponse.data = obj;
+      return Promise.resolve(apiResponse);
+    });
+}
+
+export function getText(url) {
+  const getRequest = new Request(url, {
+    method: 'GET'
+  });
+  let apiResponse = new ApiResponse();
+  return fetch(url)
+    .then(response => {
+      apiResponse.status = response.status;
+      apiResponse.statusText = response.statusText;
+      const contentType = response.headers.get('content-type');
+      if (_.isNil(contentType)) {
+        return response.text().then((text) => {
+          apiResponse.textBody = text;
+        });
+      }
+      if (response.status < 200 || response.status >= 300) {
+        return Promise.resolve(null);
+      }
+      return response.text();
+    })
+    .then((text) => {
+      apiResponse.data = text;
       return Promise.resolve(apiResponse);
     });
 }

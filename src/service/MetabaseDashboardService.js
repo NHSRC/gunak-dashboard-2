@@ -1,3 +1,5 @@
+import {getText} from "../utils/FetchHelper";
+
 export default class MetabaseDashboardService {
   static getDashboardIframeUrl(state, dashboardId, dashboardParams) {
     let searchParams = _.isEmpty(dashboardParams) ? `state=${state.name}` : `state=${state.name}&${dashboardParams}`;
@@ -6,11 +8,6 @@ export default class MetabaseDashboardService {
 
   static getIframeUrl(dashboardId, urlFragment) {
     let url = `/api/metabase-dashboard-url?dashboardId=${dashboardId}&${urlFragment}`;
-    const request = new Request(url, {
-      method: 'GET'
-    });
-    return fetch(request).then((response) => {
-      return response.text();
-    });
+    return getText(url);
   }
 }

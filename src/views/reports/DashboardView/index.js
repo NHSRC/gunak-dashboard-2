@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {useLocation} from 'react-router-dom';
-import {Container, Grid, makeStyles} from '@material-ui/core';
+import {Container, Grid, makeStyles, Typography} from '@material-ui/core';
 import Page from 'src/components/Page';
 import DashboardBox from './DashboardBox';
 import MoneyIcon from '@material-ui/icons/Money';
@@ -75,7 +75,11 @@ const Dashboard = () => {
         <br/>
         {componentState.apiResponse.data ?
           <iframe src={componentState.apiResponse.data} title='Metabase' style={{border: 'none', width: '100%', height: '1000px'}}/>
-          : <CircularProgress/>}
+          : <div><Typography
+            color="textPrimary"
+            gutterBottom
+            variant="h2"
+          >Loading data....</Typography><CircularProgress/></div>}
       </Container>
     </Page>
   );

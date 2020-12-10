@@ -6,7 +6,7 @@ import React from "react";
 export default class ApiCallView {
   static handleApiCall(apiResponse) {
     if (_.isNil(apiResponse)) {
-      return <CircularProgress/>;
+      return <div style={{alignSelf: 'center'}}><CircularProgress/></div>;
     } else if (ApiResponse.hasError(apiResponse)) {
       return <ErrorView pageTitle="Error during profile load" messageTitle={ApiResponse.getHumanError(apiResponse)}
                         message={ApiResponse.getErrorResponse(apiResponse)}/>;

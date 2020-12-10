@@ -1,9 +1,9 @@
 import LoginService from "./LoginService";
-import {get} from "../utils/FetchHelper";
+import {getJson} from "../utils/FetchHelper";
 
 export default class DataReadService {
   static getState() {
     let user = LoginService.getUser();
-    return get(`/api/state/${user.getStateId()}`);
+    return getJson(`/api/state/${user.getStateId()}`);
   }
 }
