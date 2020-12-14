@@ -1,18 +1,9 @@
 import _ from 'lodash';
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import {Link as RouterLink, Redirect} from 'react-router-dom';
 import * as Yup from 'yup';
 import {Formik} from 'formik';
-import {
-  Box,
-  Button,
-  Container,
-  Grid,
-  Link,
-  TextField,
-  Typography,
-  makeStyles
-} from '@material-ui/core';
+import {Box, Button, Container, Link, makeStyles, TextField, Typography} from '@material-ui/core';
 import Page from 'src/components/Page';
 import LoginService from "../../service/LoginService";
 import LoginState from "./LoginState";

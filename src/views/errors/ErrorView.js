@@ -1,11 +1,6 @@
 import React from 'react';
 import {useLocation} from 'react-router-dom';
-import {
-  Box,
-  Container,
-  Typography,
-  makeStyles
-} from '@material-ui/core';
+import {Box, Container, makeStyles, Typography} from '@material-ui/core';
 import Page from 'src/components/Page';
 import PropTypes from 'prop-types';
 
@@ -26,7 +21,6 @@ const useStyles = makeStyles((theme) => ({
 
 const ErrorView = ({pageTitle, messageTitle, message}) => {
   const classes = useStyles();
-  let searchString = useLocation().search.substring(1);
 
   return (
     <div>

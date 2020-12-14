@@ -2,8 +2,10 @@ import {getText} from "../utils/FetchHelper";
 import _ from 'lodash';
 
 export default class MetabaseDashboardService {
-  static getResourceIframeUrl(state, resource, dashboardParams) {
-    let searchParams = _.isEmpty(dashboardParams) ? `state=${state.name}` : `state=${state.name}&${dashboardParams}`;
+  static getResourceIframeUrl(params, resource, otherParams) {
+    let keys = Object.keys(params);
+    let queryPart = _.join(keys.map((key) => `${key}=${params[key]}`), '&');
+    let searchParams = _.isEmpty(otherParams) ? queryPart : `${queryPart}&${otherParams}`;
     return this.getIframeUrl(resource, searchParams);
   }
 

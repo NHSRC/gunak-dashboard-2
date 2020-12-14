@@ -39,16 +39,17 @@ const TopBar = ({
         <RouterLink to="/">
           <Logo/>
         </RouterLink>
+        {/*["initial","inherit","primary","secondary","textPrimary","textSecondary","error"].*/}
         <Typography
-          color="white"
+          color="initial"
           variant="h2">Gunak Dashboard</Typography>
         <Box flexGrow={1}/>
         <Hidden mdDown>
-          <IconButton color="inherit">
-            <InputIcon onClick={() => {
-              LoginService.logout();
-              update(false);
-            }}/>
+          <IconButton color="inherit" onClick={() => {
+            LoginService.logout();
+            update(false);
+          }}>
+            <InputIcon/>
           </IconButton>
         </Hidden>
         <Avatar

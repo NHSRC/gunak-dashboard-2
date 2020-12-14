@@ -51,7 +51,7 @@ const Dashboard = () => {
                         isCurrent={MetabaseResources.ExportAssessments.id === componentState.resource.id}/>
         </Grid>
         <br/>
-        <FiltersAndReports metabaseResource={componentState.resource}/>
+        <FiltersAndReports metabaseResource={componentState.resource} assessmentToolEnabled={false}/>
       </Container>
     </Page>
   );

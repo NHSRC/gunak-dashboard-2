@@ -11,7 +11,7 @@ export default class DataReadService {
     return getJson(`/api/assessmentToolMode`, 'assessmentToolMode');
   }
 
-  static getAssessmentTools(stateId) {
-    return getJson(`/api/assessmentTool/search/findByState?stateId=${stateId}`);
+  static getAssessmentTools(stateId, programId) {
+    return getJson(`/api/assessmentTool/search/findByStateAndAssessmentToolMode?stateId=${stateId}&assessmentToolModeId=${programId}`);
   }
 }

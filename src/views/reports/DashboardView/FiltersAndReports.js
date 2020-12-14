@@ -9,7 +9,7 @@ import FiltersAndReportsState from "../FiltersAndReportsState";
 import ApiResponse from "../../../model/ApiResponse";
 import MetabaseDashboardService from "../../../service/MetabaseDashboardService";
 import {useLocation} from "react-router";
-import {Typography} from "@material-ui/core";
+import {Grid, Typography} from "@material-ui/core";
 import CircularProgress from "@material-ui/core/CircularProgress/CircularProgress";
 import ApiCallView from "../../ApiCallView";
 import _ from "lodash";
@@ -26,10 +26,17 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 
-const FiltersAndReports = ({metabaseResource, ...rest}) => {
+const FiltersAndReports = ({metabaseResource, assessmentToolEnabled, ...rest}) => {
   const classes = useStyles();
 
-  const handleChange = (event) => {
+  const handleChangeInProgram = (event) => {
+    FiltersAndReportsState.setProgram(componentState, event.target.value);
+    update(FiltersAndReportsState.clone(componentState));
+  };
+
+  const handleChangeInAssessmentTool = (event) => {
+    FiltersAndReportsState.setAssessmentTool(componentState, event.target.value);
+    update(FiltersAndReportsState.clone(componentState));
   };
 
   const updateStateInError = function (apiResponse) {
@@ -51,13 +58,16 @@ const FiltersAndReports = ({metabaseResource, ...rest}) => {
           return updateStateInError(programResponse);
 
         componentState.programs = programResponse.data;
+        componentState.selectedProgram = componentState.programs[0];
 
-        DataReadService.getAssessmentTools(componentState.state.id).then((atResponse) => {
+        DataReadService.getAssessmentTools(componentState.state.id, componentState.selectedProgram.id).then((atResponse) => {
           if (ApiResponse.hasError(atResponse))
             return updateStateInError(atResponse);
 
           componentState.assessmentTools = atResponse.data;
-          MetabaseDashboardService.getResourceIframeUrl(componentState.state, componentState.resource, searchString).then((metabaseUrlResponse) => {
+          componentState.selectedAssessmentTool = componentState.assessmentTools[0];
+          let params = {"state": componentState.state.name, "program": componentState.selectedProgram.name};
+          MetabaseDashboardService.getResourceIframeUrl(params, componentState.resource, searchString).then((metabaseUrlResponse) => {
             if (ApiResponse.hasError(metabaseUrlResponse))
               return updateStateInError(metabaseUrlResponse);
 
@@ -74,18 +84,35 @@ const FiltersAndReports = ({metabaseResource, ...rest}) => {
   let view = ApiCallView.handleApiCall(componentState.lastApiResponse);
   if (!_.isNil(view)) return view;
 
-  return <>
-    <FormControl variant="outlined" className={classes.formControl}>
-      <InputLabel id="program">Program</InputLabel>
-      <Select
-        labelId="program-select"
-        id="program-select"
-        value={10}
-        onChange={handleChange}
-        label="Program"
-      >{componentState.programs.map((program) => <MenuItem value={program.id}>{program.name}</MenuItem>)}
-      </Select>
-    </FormControl>
+  return <><Grid container spacing={3}>
+    <Grid item xs={6} sm={3}>
+      <FormControl variant="outlined" className={classes.formControl}>
+        <InputLabel id="program">Program</InputLabel>
+        <Select
+          labelId="program-select"
+          id="program-select"
+          value={componentState.selectedProgram.id}
+          onChange={handleChangeInProgram}
+          label="Program"
+        >{componentState.programs.map((program) => <MenuItem key={`program-${program.id}`} value={program.id}>{program.name}</MenuItem>)}
+        </Select>
+      </FormControl>
+    </Grid>
+    {assessmentToolEnabled &&
+    <Grid item xs={6} sm={3}>
+      <FormControl variant="outlined" className={classes.formControl}>
+        <InputLabel id="assessmentTool">Assessment Tool</InputLabel>
+        <Select
+          labelId="assessment-tool-select"
+          id="assessment-tool-select"
+          value={componentState.selectedAssessmentTool.id}
+          onChange={handleChangeInAssessmentTool}
+          label="Assessment Tool"
+        >{componentState.assessmentTools.map((at) => <MenuItem key={`at-${at.id}`} value={at.id}>{at.name}</MenuItem>)}
+        </Select>
+      </FormControl>
+    </Grid>}
+  </Grid>
     {componentState.metabaseUrl ?
       <iframe src={componentState.metabaseUrl} title='Metabase' style={{border: 'none', width: '100%', height: '1000px'}}/>
       : <div><Typography
@@ -97,7 +124,8 @@ const FiltersAndReports = ({metabaseResource, ...rest}) => {
 };
 
 FiltersAndReports.propTypes = {
-  metabaseResource: PropTypes.object.isRequired
+  metabaseResource: PropTypes.object.isRequired,
+  assessmentToolEnabled: PropTypes.bool.isRequired
 };
 
 export default FiltersAndReports;
