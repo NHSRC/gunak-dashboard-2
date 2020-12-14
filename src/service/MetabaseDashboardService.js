@@ -1,4 +1,5 @@
 import {getText} from "../utils/FetchHelper";
+import _ from 'lodash';
 
 export default class MetabaseDashboardService {
   static getResourceIframeUrl(state, resource, dashboardParams) {

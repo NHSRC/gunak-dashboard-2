@@ -2,6 +2,7 @@ import CircularProgress from "@material-ui/core/CircularProgress/CircularProgres
 import ApiResponse from "../model/ApiResponse";
 import ErrorView from "./errors/ErrorView";
 import React from "react";
+import _ from 'lodash';
 
 export default class ApiCallView {
   static handleApiCall(apiResponse) {

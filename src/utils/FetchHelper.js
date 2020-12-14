@@ -7,7 +7,7 @@ export function paramsToUrlFragment(params) {
   return _.join(_.filter(paramStringArray, (x) => !_.isEmpty(x)), '&');
 }
 
-export function getJson(url) {
+export function getJson(url, embeddedObjectName) {
   const getRequest = new Request(url, {
     method: 'GET'
   });
@@ -28,7 +28,7 @@ export function getJson(url) {
       return response.json();
     })
     .then((obj) => {
-      apiResponse.data = obj;
+      apiResponse.data = obj["_embedded"] ? obj["_embedded"][embeddedObjectName] : obj;
       return Promise.resolve(apiResponse);
     });
 }

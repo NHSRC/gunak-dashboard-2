@@ -10,7 +10,6 @@ export default class DashboardState {
 
   static clone(other) {
     let dashboardState = new DashboardState();
-    dashboardState.apiResponse = other.apiResponse;
     dashboardState.resource = other.resource;
     return dashboardState;
   }

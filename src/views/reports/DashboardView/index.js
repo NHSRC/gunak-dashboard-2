@@ -1,20 +1,15 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {useLocation} from 'react-router-dom';
-import {Container, Grid, makeStyles, Typography} from '@material-ui/core';
+import {Container, Grid, makeStyles} from '@material-ui/core';
 import Page from 'src/components/Page';
 import DashboardBox from './DashboardBox';
 import MoneyIcon from '@material-ui/icons/Money';
 import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import ImportExportIcon from '@material-ui/icons/ImportExport';
-import MetabaseDashboardService from "../../../service/MetabaseDashboardService";
 import DashboardState from "../DashboardState";
-import CircularProgress from "@material-ui/core/CircularProgress/CircularProgress";
-import DataReadService from "../../../service/DataReadService";
 import MetabaseResources from "../MetabaseResources";
-import ApiCallView from "../../ApiCallView";
-import ApiResponse from "../../../model/ApiResponse";
-import Filters from "./Filters";
+import FiltersAndReports from "./FiltersAndReports";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -30,29 +25,11 @@ const Dashboard = () => {
 
   let searchString = useLocation().search.substring(1);
   const [componentState, update] = useState(DashboardState.newInstance(searchString));
-  // program, assessment_tool, assessment_type
-  useEffect(() => {
-    DataReadService.getState().then((apiResponse) => {
-      if (ApiResponse.hasError(apiResponse)) {
-        componentState.apiResponse = apiResponse;
-        update(DashboardState.clone(componentState));
-        return;
-      }
-
-      MetabaseDashboardService.getResourceIframeUrl(apiResponse.data, componentState.resource, searchString).then((apiResponse2) => {
-        componentState.apiResponse = apiResponse2;
-        update(DashboardState.clone(componentState));
-      });
-    });
-  }, [componentState.resource]);
 
   const switchToDashboard = function (resource) {
     componentState.resource = resource;
     update(DashboardState.clone(componentState));
   };
-
-  let view = ApiCallView.handleApiCall(componentState.apiResponse);
-  if (!_.isNil(view)) return view;
 
   return (
     <Page
@@ -74,14 +51,7 @@ const Dashboard = () => {
                         isCurrent={MetabaseResources.ExportAssessments.id === componentState.resource.id}/>
         </Grid>
         <br/>
-        <Filters/>
-        {componentState.apiResponse.data ?
-          <iframe src={componentState.apiResponse.data} title='Metabase' style={{border: 'none', width: '100%', height: '1000px'}}/>
-          : <div><Typography
-            color="textPrimary"
-            gutterBottom
-            variant="h2"
-          >Loading data....</Typography><CircularProgress/></div>}
+        <FiltersAndReports metabaseResource={componentState.resource}/>
       </Container>
     </Page>
   );

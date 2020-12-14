@@ -7,6 +7,7 @@ import ProfileState from "../ProfileState";
 import User from "../../../model/User";
 import UserProfileService from "../../../service/UserProfileService";
 import ApiCallView from "../../ApiCallView";
+import _ from 'lodash';
 
 const useStyles = makeStyles(() => ({
   root: {}
@@ -19,7 +20,6 @@ const ProfileDetails = ({className, user, ...rest}) => {
   useEffect(() => {
     DataReadService.getState().then((apiResponse) => {
       profileState.apiResponse = apiResponse;
-      console.log(profileState);
       update(ProfileState.clone(profileState));
     });
   }, []);
