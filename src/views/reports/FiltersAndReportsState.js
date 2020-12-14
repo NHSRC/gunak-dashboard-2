@@ -4,6 +4,8 @@ import MetabaseResources from "./MetabaseResources";
 export default class FiltersAndReportsState {
   static newInstance(searchString) {
     let filtersAndReportsState = new FiltersAndReportsState();
+    filtersAndReportsState.programs = [{id: 0, name: "foo"}];
+    filtersAndReportsState.selectedProgram = {id: 0};
     filtersAndReportsState.resource = _.isEmpty(searchString) ? MetabaseResources.Main : MetabaseResources.AssessmentList;
     return filtersAndReportsState;
   }
@@ -11,6 +13,7 @@ export default class FiltersAndReportsState {
   static clone(other) {
     let filtersAndReportsState = new FiltersAndReportsState();
     filtersAndReportsState.lastApiResponse = other.lastApiResponse;
+    filtersAndReportsState.resource = other.resource;
     filtersAndReportsState.metabaseUrl = other.metabaseUrl;
     filtersAndReportsState.programs = other.programs;
     filtersAndReportsState.assessmentTools = other.assessmentTools;
