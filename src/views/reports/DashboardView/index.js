@@ -11,9 +11,10 @@ import MetabaseDashboardService from "../../../service/MetabaseDashboardService"
 import DashboardState from "../DashboardState";
 import CircularProgress from "@material-ui/core/CircularProgress/CircularProgress";
 import DataReadService from "../../../service/DataReadService";
-import MetabaseDashboards from "../MetabaseDashboards";
+import MetabaseResources from "../MetabaseResources";
 import ApiCallView from "../../ApiCallView";
 import ApiResponse from "../../../model/ApiResponse";
+import Filters from "./Filters";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -61,18 +62,19 @@ const Dashboard = () => {
       <Container maxWidth={false}>
         <Grid container spacing={3}>
           <DashboardBox title="ASSESSMENT DONE" description="View assessments done in the state" icon={<ImportExportIcon/>}
-                        linkedDashboard={MetabaseDashboards.Main} clickFn={switchToDashboard} isCurrent={MetabaseDashboards.Main.id === componentState.resource.id}/>
+                        clickFn={switchToDashboard} isCurrent={MetabaseResources.Main.id === componentState.resource.id}/>
           <DashboardBox title="ASSESSMENT STATISTICS" description="Average, median scores, etc - by department, standard, area of concern, and overall"
-                        icon={<MoneyIcon/>} linkedDashboard={MetabaseDashboards.Statistics} clickFn={switchToDashboard}
-                        isCurrent={MetabaseDashboards.Statistics === componentState.resource}/>
+                        icon={<MoneyIcon/>} clickFn={() => switchToDashboard(MetabaseResources.Statistics)}
+                        isCurrent={MetabaseResources.Statistics.id === componentState.resource.id}/>
           <DashboardBox title="FACILITIES RANKING" description="Facilities ranked across state by overall score" icon={<ArrowUpwardIcon/>}
-                        linkedDashboard={MetabaseDashboards.FacilitiesRanking} clickFn={switchToDashboard}
-                        isCurrent={MetabaseDashboards.FacilitiesRanking === componentState.resource}/>
+                        clickFn={() => switchToDashboard(MetabaseResources.FacilitiesRanking)}
+                        isCurrent={MetabaseResources.FacilitiesRanking.id === componentState.resource.id}/>
           <DashboardBox title="EXPORT ASSESSMENT DATA" description="View and download complete assessment" icon={<CloudDownloadIcon/>}
-                        linkedDashboard={MetabaseDashboards.ExportAssessments} clickFn={switchToDashboard}
-                        isCurrent={MetabaseDashboards.ExportAssessments === componentState.resource}/>
+                        clickFn={() => switchToDashboard(MetabaseResources.ExportAssessments)}
+                        isCurrent={MetabaseResources.ExportAssessments.id === componentState.resource.id}/>
         </Grid>
         <br/>
+        <Filters/>
         {componentState.apiResponse.data ?
           <iframe src={componentState.apiResponse.data} title='Metabase' style={{border: 'none', width: '100%', height: '1000px'}}/>
           : <div><Typography

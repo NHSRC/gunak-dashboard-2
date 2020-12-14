@@ -31,7 +31,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const DashboardBox = ({className, title, icon, description, linkedDashboard, clickFn, isCurrent, ...rest}) => {
+const DashboardBox = ({className, title, icon, description, clickFn, isCurrent, ...rest}) => {
   const classes = useStyles();
 
   return (
@@ -77,7 +77,6 @@ DashboardBox.propTypes = {
   title: PropTypes.string.isRequired,
   icon: PropTypes.object.isRequired,
   description: PropTypes.string.isRequired,
-  linkedDashboard: PropTypes.number.isRequired,
   isCurrent: PropTypes.bool.isRequired,
   clickFn: PropTypes.func.isRequired
 };

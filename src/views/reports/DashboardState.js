@@ -1,4 +1,4 @@
-import MetabaseResources from "./MetabaseDashboards";
+import MetabaseResources from "./MetabaseResources";
 import _ from 'lodash';
 
 export default class DashboardState {

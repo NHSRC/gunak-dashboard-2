@@ -1,25 +1,11 @@
 import React, {useEffect, useState} from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  Divider,
-  Grid,
-  TextField,
-  makeStyles
-} from '@material-ui/core';
+import {Box, Button, Card, CardContent, CardHeader, Divider, Grid, makeStyles, TextField} from '@material-ui/core';
 import DataReadService from "../../../service/DataReadService";
 import ProfileState from "../ProfileState";
 import User from "../../../model/User";
 import UserProfileService from "../../../service/UserProfileService";
-import CircularProgress from "@material-ui/core/CircularProgress/CircularProgress";
-import {Redirect} from "react-router-dom";
-import ApiResponse from "../../../model/ApiResponse";
-import ErrorView from "../../errors/ErrorView";
 import ApiCallView from "../../ApiCallView";
 
 const useStyles = makeStyles(() => ({
@@ -33,6 +19,7 @@ const ProfileDetails = ({className, user, ...rest}) => {
   useEffect(() => {
     DataReadService.getState().then((apiResponse) => {
       profileState.apiResponse = apiResponse;
+      console.log(profileState);
       update(ProfileState.clone(profileState));
     });
   }, []);
@@ -122,11 +109,11 @@ const ProfileDetails = ({className, user, ...rest}) => {
                 required
                 select
                 SelectProps={{native: true}}
-                value={profileState.state.name}
+                value={profileState.apiResponse.data.name}
                 variant="outlined"
               >
-                {[<option key={profileState.state.name} value={profileState.state.name}>
-                  {profileState.state.name}
+                {[<option key={profileState.apiResponse.data.name} value={profileState.apiResponse.data.name}>
+                  {profileState.apiResponse.data.name}
                 </option>]}
               </TextField>
             </Grid>}

@@ -1,7 +1,7 @@
-export default class MetabaseDashboards {
+export default class MetabaseResources {
   static Main = this.createDashboard(2);
   static AssessmentList = this.createQuestion(9);
-  static Statistics = this.createDashboard(3);
+  static Statistics = this.createDashboard(5);
   static FacilitiesRanking = this.createDashboard(4);
   static ExportAssessments = this.createDashboard(7);
 
