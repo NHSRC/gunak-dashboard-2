@@ -26,32 +26,29 @@ const Dashboard = () => {
   let searchString = useLocation().search.substring(1);
   const [componentState, update] = useState(DashboardState.newInstance(searchString));
 
-  const switchToDashboard = function (resource) {
+  const switchToResource = function (resource) {
     componentState.resource = resource;
     update(DashboardState.clone(componentState));
   };
 
   return (
-    <Page
-      className={classes.root}
-      title="Dashboard"
-    >
+    <Page className={classes.root} title="Dashboard">
       <Container maxWidth={false}>
         <Grid container spacing={3}>
           <DashboardBox title="ASSESSMENT DONE" description="View assessments done in the state" icon={<ImportExportIcon/>}
-                        clickFn={switchToDashboard} isCurrent={MetabaseResources.Main.id === componentState.resource.id}/>
+                        clickFn={switchToResource} isCurrent={MetabaseResources.Main.id === componentState.resource.id}/>
           <DashboardBox title="ASSESSMENT STATISTICS" description="Average, median scores, etc - by department, standard, area of concern, and overall"
-                        icon={<MoneyIcon/>} clickFn={() => switchToDashboard(MetabaseResources.Statistics)}
+                        icon={<MoneyIcon/>} clickFn={() => switchToResource(MetabaseResources.Statistics)}
                         isCurrent={MetabaseResources.Statistics.id === componentState.resource.id}/>
           <DashboardBox title="FACILITIES RANKING" description="Facilities ranked across state by overall score" icon={<ArrowUpwardIcon/>}
-                        clickFn={() => switchToDashboard(MetabaseResources.FacilitiesRanking)}
+                        clickFn={() => switchToResource(MetabaseResources.FacilitiesRanking)}
                         isCurrent={MetabaseResources.FacilitiesRanking.id === componentState.resource.id}/>
           <DashboardBox title="EXPORT ASSESSMENT DATA" description="View and download complete assessment" icon={<CloudDownloadIcon/>}
-                        clickFn={() => switchToDashboard(MetabaseResources.ExportAssessments)}
+                        clickFn={() => switchToResource(MetabaseResources.ExportAssessments)}
                         isCurrent={MetabaseResources.ExportAssessments.id === componentState.resource.id}/>
         </Grid>
         <br/>
-        <FiltersAndReports metabaseResource={componentState.resource} assessmentToolEnabled={false}/>
+        <FiltersAndReports metabaseResource={componentState.resource}/>
       </Container>
     </Page>
   );

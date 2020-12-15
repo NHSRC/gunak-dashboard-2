@@ -1,35 +1,36 @@
 import _ from "lodash";
-import MetabaseResources from "./MetabaseResources";
 
 export default class FiltersAndReportsState {
   static newInstance(searchString) {
     let filtersAndReportsState = new FiltersAndReportsState();
     filtersAndReportsState.programs = [{id: 0, name: "foo"}];
     filtersAndReportsState.selectedProgram = {id: 0};
-    filtersAndReportsState.resource = _.isEmpty(searchString) ? MetabaseResources.Main : MetabaseResources.AssessmentList;
     return filtersAndReportsState;
   }
 
   static clone(other) {
     let filtersAndReportsState = new FiltersAndReportsState();
     filtersAndReportsState.lastApiResponse = other.lastApiResponse;
-    filtersAndReportsState.resource = other.resource;
     filtersAndReportsState.metabaseUrl = other.metabaseUrl;
     filtersAndReportsState.programs = other.programs;
     filtersAndReportsState.assessmentTools = other.assessmentTools;
     filtersAndReportsState.state = other.state;
     filtersAndReportsState.selectedProgram = other.selectedProgram;
     filtersAndReportsState.selectedAssessmentTool = other.selectedAssessmentTool;
+    filtersAndReportsState.assessmentTypes = other.assessmentTypes;
+    filtersAndReportsState.selectedAssessmentType = other.selectedAssessmentType;
     return filtersAndReportsState;
   }
 
   static setProgram(filtersAndReportsState, programId) {
-    let program = _.find(filtersAndReportsState.programs, (program) => program.id === programId);
-    filtersAndReportsState.selectedProgram = program;
+    filtersAndReportsState.selectedProgram = _.find(filtersAndReportsState.programs, (program) => program.id === programId);
   }
 
   static setAssessmentTool(filtersAndReportsState, atId) {
-    let at = _.find(filtersAndReportsState.assessmentTools, (at) => at.id === atId);
-    filtersAndReportsState.selectedAssessmentTool = at;
+    filtersAndReportsState.selectedAssessmentTool = _.find(filtersAndReportsState.assessmentTools, (at) => at.id === atId);
+  }
+
+  static setAssessmentType(filtersAndReportsState, aTypeId) {
+    filtersAndReportsState.selectedAssessmentType = _.find(filtersAndReportsState.assessmentTypes, (aType) => aType.id === aTypeId);
   }
 }
