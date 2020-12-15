@@ -4,7 +4,7 @@ export default class MetabaseResources {
   static Main = this.createDashboard(2, false, false, '1000px');
   static AssessmentList = this.createQuestion(9);
   static Statistics = this.createDashboard(5, true, true, '2300px');
-  static FacilitiesRanking = this.createDashboard(4);
+  static FacilitiesRanking = this.createDashboard(4, true, true, '1000px');
   static ExportAssessments = this.createDashboard(7);
 
   static createDashboard(id, hasAssessmentTool, hasAssessmentType, height) {
