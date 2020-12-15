@@ -24,8 +24,13 @@ const useStyles = makeStyles((theme) => ({
   selectEmpty: {
     marginTop: theme.spacing(2),
   },
+  formControlSelect: {
+    marginTop: 6
+  },
+  formControlButton: {
+    marginTop: 48
+  }
 }));
-
 
 const FiltersAndReports = ({metabaseResource, ...rest}) => {
     const classes = useStyles();
@@ -64,40 +69,41 @@ const FiltersAndReports = ({metabaseResource, ...rest}) => {
           if (ApiResponse.hasError(programResponse))
             return updateStateInError(programResponse);
 
+          componentState.lastApiResponse = programResponse;
           componentState.programs = programResponse.data;
-          componentState.selectedProgram = componentState.programs[0];
           update(FiltersAndReportsState.clone(componentState));
         });
       });
     }, []);
 
     useEffect(() => {
-      if (componentState.selectedProgram.id === 0) return;
+      console.log("loading assessment tools");
+      if (!FiltersAndReportsState.getCurrentProgram(componentState)) return;
 
-      DataReadService.getAssessmentTools(componentState.state.id, componentState.selectedProgram.id).then((atResponse) => {
+      DataReadService.getAssessmentTools(componentState.state.id, FiltersAndReportsState.getCurrentProgramId(componentState)).then((atResponse) => {
         if (ApiResponse.hasError(atResponse))
           return updateStateInError(atResponse);
 
         componentState.assessmentTools = atResponse.data;
-        componentState.selectedAssessmentTool = componentState.assessmentTools[0];
         update(FiltersAndReportsState.clone(componentState));
       });
-    }, [componentState.selectedProgram.id, metabaseResource.id]);
+    }, [FiltersAndReportsState.getUserSelectedProgramId(componentState), metabaseResource.id]);
 
     useEffect(() => {
-      DataReadService.getAssessmentTypes(componentState.selectedProgram.id).then((aTypeResponse) => {
+      console.log("loading assessment types");
+      if (!FiltersAndReportsState.getCurrentProgram(componentState)) return;
+
+      DataReadService.getAssessmentTypes(FiltersAndReportsState.getCurrentProgramId(componentState)).then((aTypeResponse) => {
         if (ApiResponse.hasError(aTypeResponse))
           return updateStateInError(aTypeResponse);
 
         componentState.assessmentTypes = aTypeResponse.data;
-        componentState.selectedAssessmentType = componentState.assessmentTypes[0];
         update(FiltersAndReportsState.clone(componentState));
       });
-    }, [componentState.selectedAssessmentTool ? componentState.selectedAssessmentTool.id : 0,
-      componentState.selectedProgram.id, metabaseResource.id]);
+    }, [FiltersAndReportsState.getUserSelectedProgramId(componentState), metabaseResource.id]);
 
     useEffect(() => {
-      let params = MetabaseResources.createFilterObject(metabaseResource, componentState.state, componentState.selectedProgram, componentState.selectedAssessmentTool, componentState.selectedAssessmentType);
+      let params = MetabaseResources.createFilterObject(metabaseResource, componentState.state, FiltersAndReportsState.getCurrentProgram(componentState), FiltersAndReportsState.getCurrentAssessmentTool(componentState), FiltersAndReportsState.getCurrentAssessmentType(componentState));
       if (_.isNil(params)) return;
 
       MetabaseDashboardService.getResourceIframeUrl(params, metabaseResource, searchString).then((metabaseUrlResponse) => {
@@ -108,58 +114,62 @@ const FiltersAndReports = ({metabaseResource, ...rest}) => {
         componentState.lastApiResponse = metabaseUrlResponse;
         update(FiltersAndReportsState.clone(componentState));
       });
-    }, [componentState.selectedAssessmentType ? componentState.selectedAssessmentType.id : 0,
-      componentState.selectedAssessmentTool ? componentState.selectedAssessmentTool.id : 0,
-      componentState.selectedProgram.id, metabaseResource.id]);
+    }, [FiltersAndReportsState.getUserSelectedAssessmentToolId(componentState), FiltersAndReportsState.getUserSelectedAssessmentTypeId(componentState), FiltersAndReportsState.getUserSelectedProgramId(componentState), metabaseResource.id, MetabaseResources.isAllLoaded(metabaseResource, componentState.programs, componentState.assessmentTools, componentState.assessmentTypes)]);
 
     let view = ApiCallView.handleApiCall(componentState.lastApiResponse);
     if (!_.isNil(view)) return view;
 
+    console.log(componentState);
+
     return <><Grid container spacing={3}>
-      <Grid item xs={6} sm={3}>
+      <Grid item>
         <FormControl variant="outlined" className={classes.formControl}>
-          <InputLabel id="program">Program</InputLabel>
+          <InputLabel id="program"><b>PROGRAM</b></InputLabel>
           <Select
             labelId="program-select"
             id="program-select"
-            value={componentState.selectedProgram.id}
+            value={FiltersAndReportsState.getCurrentProgramId(componentState)}
             onChange={handleChangeInProgram}
             label="Program"
+            className={classes.formControlSelect}
           >{componentState.programs.map((program) => <MenuItem key={`program-${program.id}`} value={program.id}>{program.name}</MenuItem>)}
           </Select>
         </FormControl>
       </Grid>
-      {metabaseResource.hasAssessmentTool && componentState.selectedAssessmentTool &&
-      <Grid item xs={6} sm={3}>
+      {metabaseResource.hasAssessmentTool && componentState.assessmentTools &&
+      <Grid item>
         <FormControl variant="outlined" className={classes.formControl}>
-          <InputLabel id="assessmentTool">Assessment Tool</InputLabel>
+          <InputLabel id="assessmentTool"><b>ASSESSMENT TOOL</b></InputLabel>
           <Select
             labelId="assessment-tool-select"
             id="assessment-tool-select"
-            value={componentState.selectedAssessmentTool.id}
+            value={FiltersAndReportsState.getCurrentAssessmentToolId(componentState)}
             onChange={handleChangeInAssessmentTool}
             label="Assessment Tool"
+            className={classes.formControlSelect}
           >{componentState.assessmentTools.map((at) => <MenuItem key={`at-${at.id}`} value={at.id}>{at.name}</MenuItem>)}
           </Select>
         </FormControl>
       </Grid>}
-      {metabaseResource.hasAssessmentType && componentState.selectedAssessmentType &&
-      <Grid item xs={6} sm={3}>
+      {metabaseResource.hasAssessmentType && componentState.assessmentTypes &&
+      <Grid item>
         <FormControl variant="outlined" className={classes.formControl}>
-          <InputLabel id="assessmentType">Assessment Type</InputLabel>
+          <InputLabel id="assessmentType"><b>ASSESSMENT TYPE</b></InputLabel>
           <Select
             labelId="assessment-type-select"
             id="assessment-type-select"
-            value={componentState.selectedAssessmentType.id}
+            value={FiltersAndReportsState.getCurrentAssessmentTypeId(componentState)}
             onChange={handleChangeInAssessmentType}
             label="Assessment Tool"
+            className={classes.formControlSelect}
           >{componentState.assessmentTypes.map((aType) => <MenuItem key={`aType-${aType.id}`} value={aType.id}>{aType.name}</MenuItem>)}
           </Select>
         </FormControl>
       </Grid>}
     </Grid>
-      {componentState.metabaseUrl ?
-        <iframe src={componentState.metabaseUrl} title='Metabase' style={{border: 'none', width: '100%', height: '1000px'}}/>
+      {(!_.isNil(componentState.metabaseUrl)) ?
+        <iframe src={componentState.metabaseUrl} title='Metabase' style={{border: 'none', width: '100%', height: metabaseResource.height}} onLoad={() => {
+        }}/>
         : <div><Typography
           color="textPrimary"
           gutterBottom

@@ -2,10 +2,7 @@ import _ from "lodash";
 
 export default class FiltersAndReportsState {
   static newInstance(searchString) {
-    let filtersAndReportsState = new FiltersAndReportsState();
-    filtersAndReportsState.programs = [{id: 0, name: "foo"}];
-    filtersAndReportsState.selectedProgram = {id: 0};
-    return filtersAndReportsState;
+    return new FiltersAndReportsState();
   }
 
   static clone(other) {
@@ -24,13 +21,58 @@ export default class FiltersAndReportsState {
 
   static setProgram(filtersAndReportsState, programId) {
     filtersAndReportsState.selectedProgram = _.find(filtersAndReportsState.programs, (program) => program.id === programId);
+    filtersAndReportsState.filterUpdated = false;
   }
 
   static setAssessmentTool(filtersAndReportsState, atId) {
     filtersAndReportsState.selectedAssessmentTool = _.find(filtersAndReportsState.assessmentTools, (at) => at.id === atId);
+    filtersAndReportsState.filterUpdated = false;
   }
 
   static setAssessmentType(filtersAndReportsState, aTypeId) {
     filtersAndReportsState.selectedAssessmentType = _.find(filtersAndReportsState.assessmentTypes, (aType) => aType.id === aTypeId);
+    filtersAndReportsState.filterUpdated = false;
+  }
+
+  static getUserSelectedProgramId(filtersAndReportsState) {
+    return _.isNil(filtersAndReportsState.selectedProgram) ? 0 : filtersAndReportsState.selectedProgram.id;
+  }
+
+  static getCurrentProgramId(filtersAndReportsState) {
+    if (_.isNil(filtersAndReportsState.programs)) return 0;
+    return this.getCurrentProgram(filtersAndReportsState).id;
+  }
+
+  static getCurrentProgram(filtersAndReportsState) {
+    if (_.isNil(filtersAndReportsState.programs)) return null;
+    return _.isNil(filtersAndReportsState.selectedProgram) ? filtersAndReportsState.programs[0] : filtersAndReportsState.selectedProgram;
+  }
+
+  static getUserSelectedAssessmentToolId(filtersAndReportsState) {
+    return _.isNil(filtersAndReportsState.selectedAssessmentTool) ? 0 : filtersAndReportsState.selectedAssessmentTool.id;
+  }
+
+  static getCurrentAssessmentToolId(filtersAndReportsState) {
+    if (_.isNil(filtersAndReportsState.assessmentTools)) return 0;
+    return this.getCurrentAssessmentTool(filtersAndReportsState).id;
+  }
+
+  static getCurrentAssessmentTool(filtersAndReportsState) {
+    if (_.isNil(filtersAndReportsState.assessmentTools)) return null;
+    return _.isNil(filtersAndReportsState.selectedAssessmentTool) ? filtersAndReportsState.assessmentTools[0] : filtersAndReportsState.selectedAssessmentTool;
+  }
+
+  static getUserSelectedAssessmentTypeId(filtersAndReportsState) {
+    return _.isNil(filtersAndReportsState.selectedAssessmentType) ? 0 : filtersAndReportsState.selectedAssessmentType.id;
+  }
+
+  static getCurrentAssessmentTypeId(filtersAndReportsState) {
+    if (_.isNil(filtersAndReportsState.assessmentTypes)) return 0;
+    return this.getCurrentAssessmentType(filtersAndReportsState).id;
+  }
+
+  static getCurrentAssessmentType(filtersAndReportsState) {
+    if (_.isNil(filtersAndReportsState.assessmentTypes)) return null;
+    return _.isNil(filtersAndReportsState.selectedAssessmentType) ? filtersAndReportsState.assessmentTypes[0] : filtersAndReportsState.selectedAssessmentType;
   }
 }

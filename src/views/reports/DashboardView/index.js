@@ -36,7 +36,7 @@ const Dashboard = () => {
       <Container maxWidth={false}>
         <Grid container spacing={3}>
           <DashboardBox title="ASSESSMENT DONE" description="View assessments done in the state" icon={<ImportExportIcon/>}
-                        clickFn={switchToResource} isCurrent={MetabaseResources.Main.id === componentState.resource.id}/>
+                        clickFn={() => switchToResource(MetabaseResources.Main)} isCurrent={MetabaseResources.Main.id === componentState.resource.id}/>
           <DashboardBox title="ASSESSMENT STATISTICS" description="Average, median scores, etc - by department, standard, area of concern, and overall"
                         icon={<MoneyIcon/>} clickFn={() => switchToResource(MetabaseResources.Statistics)}
                         isCurrent={MetabaseResources.Statistics.id === componentState.resource.id}/>
@@ -47,6 +47,8 @@ const Dashboard = () => {
                         clickFn={() => switchToResource(MetabaseResources.ExportAssessments)}
                         isCurrent={MetabaseResources.ExportAssessments.id === componentState.resource.id}/>
         </Grid>
+        <br/>
+        <br/>
         <br/>
         <FiltersAndReports metabaseResource={componentState.resource}/>
       </Container>
