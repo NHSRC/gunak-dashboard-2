@@ -119,54 +119,53 @@ const FiltersAndReports = ({metabaseResource, ...rest}) => {
     let view = ApiCallView.handleApiCall(componentState.lastApiResponse);
     if (!_.isNil(view)) return view;
 
-    console.log(componentState);
-
-    return <><Grid container spacing={3}>
-      <Grid item>
-        <FormControl variant="outlined" className={classes.formControl}>
-          <InputLabel id="program"><b>PROGRAM</b></InputLabel>
-          <Select
-            labelId="program-select"
-            id="program-select"
-            value={FiltersAndReportsState.getCurrentProgramId(componentState)}
-            onChange={handleChangeInProgram}
-            label="Program"
-            className={classes.formControlSelect}
-          >{componentState.programs.map((program) => <MenuItem key={`program-${program.id}`} value={program.id}>{program.name}</MenuItem>)}
-          </Select>
-        </FormControl>
+    return <>
+      <Grid container spacing={3}>
+        <Grid item>
+          <FormControl variant="outlined" className={classes.formControl}>
+            <InputLabel id="program"><b>PROGRAM</b></InputLabel>
+            <Select
+              labelId="program-select"
+              id="program-select"
+              value={FiltersAndReportsState.getCurrentProgramId(componentState)}
+              onChange={handleChangeInProgram}
+              label="Program"
+              className={classes.formControlSelect}
+            >{componentState.programs.map((program) => <MenuItem key={`program-${program.id}`} value={program.id}>{program.name}</MenuItem>)}
+            </Select>
+          </FormControl>
+        </Grid>
+        {metabaseResource.hasAssessmentTool && componentState.assessmentTools &&
+        <Grid item>
+          <FormControl variant="outlined" className={classes.formControl}>
+            <InputLabel id="assessmentTool"><b>ASSESSMENT TOOL</b></InputLabel>
+            <Select
+              labelId="assessment-tool-select"
+              id="assessment-tool-select"
+              value={FiltersAndReportsState.getCurrentAssessmentToolId(componentState)}
+              onChange={handleChangeInAssessmentTool}
+              label="Assessment Tool"
+              className={classes.formControlSelect}
+            >{componentState.assessmentTools.map((at) => <MenuItem key={`at-${at.id}`} value={at.id}>{at.name}</MenuItem>)}
+            </Select>
+          </FormControl>
+        </Grid>}
+        {metabaseResource.hasAssessmentType && componentState.assessmentTypes &&
+        <Grid item>
+          <FormControl variant="outlined" className={classes.formControl}>
+            <InputLabel id="assessmentType"><b>ASSESSMENT TYPE</b></InputLabel>
+            <Select
+              labelId="assessment-type-select"
+              id="assessment-type-select"
+              value={FiltersAndReportsState.getCurrentAssessmentTypeId(componentState)}
+              onChange={handleChangeInAssessmentType}
+              label="Assessment Tool"
+              className={classes.formControlSelect}
+            >{componentState.assessmentTypes.map((aType) => <MenuItem key={`aType-${aType.id}`} value={aType.id}>{aType.name}</MenuItem>)}
+            </Select>
+          </FormControl>
+        </Grid>}
       </Grid>
-      {metabaseResource.hasAssessmentTool && componentState.assessmentTools &&
-      <Grid item>
-        <FormControl variant="outlined" className={classes.formControl}>
-          <InputLabel id="assessmentTool"><b>ASSESSMENT TOOL</b></InputLabel>
-          <Select
-            labelId="assessment-tool-select"
-            id="assessment-tool-select"
-            value={FiltersAndReportsState.getCurrentAssessmentToolId(componentState)}
-            onChange={handleChangeInAssessmentTool}
-            label="Assessment Tool"
-            className={classes.formControlSelect}
-          >{componentState.assessmentTools.map((at) => <MenuItem key={`at-${at.id}`} value={at.id}>{at.name}</MenuItem>)}
-          </Select>
-        </FormControl>
-      </Grid>}
-      {metabaseResource.hasAssessmentType && componentState.assessmentTypes &&
-      <Grid item>
-        <FormControl variant="outlined" className={classes.formControl}>
-          <InputLabel id="assessmentType"><b>ASSESSMENT TYPE</b></InputLabel>
-          <Select
-            labelId="assessment-type-select"
-            id="assessment-type-select"
-            value={FiltersAndReportsState.getCurrentAssessmentTypeId(componentState)}
-            onChange={handleChangeInAssessmentType}
-            label="Assessment Tool"
-            className={classes.formControlSelect}
-          >{componentState.assessmentTypes.map((aType) => <MenuItem key={`aType-${aType.id}`} value={aType.id}>{aType.name}</MenuItem>)}
-          </Select>
-        </FormControl>
-      </Grid>}
-    </Grid>
       {(!_.isNil(componentState.metabaseUrl)) ?
         <iframe src={componentState.metabaseUrl} title='Metabase' style={{border: 'none', width: '100%', height: metabaseResource.height}} onLoad={() => {
         }}/>

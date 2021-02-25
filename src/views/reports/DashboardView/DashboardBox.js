@@ -1,17 +1,8 @@
 import React from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import {
-  Avatar,
-  Box,
-  Card,
-  CardContent,
-  Grid,
-  Typography,
-  colors,
-  Link,
-  makeStyles
-} from '@material-ui/core';
+import {Avatar, Card, CardContent, colors, Grid, Link, makeStyles, Typography} from '@material-ui/core';
+import RRDLink from "react-router-dom/Link";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -59,8 +50,7 @@ const DashboardBox = ({className, title, icon, description, clickFn, isCurrent, 
                 gutterBottom
                 variant="h6"
                 underline="always"
-                onClick={() => clickFn()}
-              >{title}</Link>
+              ><RRDLink to="/app/dashboard/foo">{title}</RRDLink></Link>
               <Typography
                 color="textPrimary"
                 variant="h5">{description}</Typography>

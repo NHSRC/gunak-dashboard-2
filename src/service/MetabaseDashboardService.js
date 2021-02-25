@@ -1,6 +1,8 @@
 import {getText} from "../utils/FetchHelper";
 import _ from 'lodash';
 
+//#hide_parameters=id
+
 export default class MetabaseDashboardService {
   static getResourceIframeUrl(params, resource, otherParams) {
     let keys = Object.keys(params);
