@@ -1,5 +1,4 @@
 import _ from "lodash";
-import React from 'react';
 import ApiResponse from "../model/ApiResponse";
 
 export function paramsToUrlFragment(params) {
@@ -8,6 +7,7 @@ export function paramsToUrlFragment(params) {
 }
 
 export function getJson(url, embeddedObjectName) {
+  console.log("Getting Json response from: ", url);
   const getRequest = new Request(url, {
     method: 'GET'
   });
@@ -34,7 +34,7 @@ export function getJson(url, embeddedObjectName) {
 }
 
 export function getText(url) {
-  const getRequest = new Request(url, {
+  new Request(url, {
     method: 'GET'
   });
   let apiResponse = new ApiResponse();

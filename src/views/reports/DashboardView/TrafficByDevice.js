@@ -1,18 +1,8 @@
 import React from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import { Doughnut } from 'react-chartjs-2';
-import {
-  Box,
-  Card,
-  CardContent,
-  CardHeader,
-  Divider,
-  Typography,
-  colors,
-  makeStyles,
-  useTheme
-} from '@material-ui/core';
+import {Doughnut} from 'react-chartjs-2';
+import {Box, Card, CardContent, CardHeader, colors, Divider, makeStyles, Typography, useTheme} from '@material-ui/core';
 import LaptopMacIcon from '@material-ui/icons/LaptopMac';
 import PhoneIcon from '@material-ui/icons/Phone';
 import TabletIcon from '@material-ui/icons/Tablet';

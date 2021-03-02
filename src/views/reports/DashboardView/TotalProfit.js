@@ -1,15 +1,7 @@
 import React from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import {
-  Avatar,
-  Card,
-  CardContent,
-  Grid,
-  Typography,
-  makeStyles,
-  colors
-} from '@material-ui/core';
+import {Avatar, Card, CardContent, colors, Grid, makeStyles, Typography} from '@material-ui/core';
 import AttachMoneyIcon from '@material-ui/icons/AttachMoney';
 
 const useStyles = makeStyles(() => ({

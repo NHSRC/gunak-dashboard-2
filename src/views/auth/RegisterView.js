@@ -1,18 +1,8 @@
 import React from 'react';
-import { Link as RouterLink, } from 'react-router-dom';
+import {Link as RouterLink,} from 'react-router-dom';
 import * as Yup from 'yup';
-import { Formik } from 'formik';
-import {
-  Box,
-  Button,
-  Checkbox,
-  Container,
-  FormHelperText,
-  Link,
-  TextField,
-  Typography,
-  makeStyles
-} from '@material-ui/core';
+import {Formik} from 'formik';
+import {Box, Button, Checkbox, Container, FormHelperText, Link, makeStyles, TextField, Typography} from '@material-ui/core';
 import Page from 'src/components/Page';
 
 const useStyles = makeStyles((theme) => ({

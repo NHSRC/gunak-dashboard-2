@@ -5,17 +5,70 @@ import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import ImportExportIcon from '@material-ui/icons/ImportExport';
 import React from "react";
 
+class DashboardFilter {
+  static Program = new DashboardFilter({param: "assessment_tool_mode", displayName: "Program", resourceName: "assessmentToolMode"});
+  static AssessmentTool = new DashboardFilter({param: "assessment_tool", displayName: "Assessment Tool", dependentOn: DashboardFilter.Program, resourceName: "assessmentTool"});
+  static AssessmentType = new DashboardFilter({param: "assessment_type", displayName: "Assessment Type", dependentOn: DashboardFilter.Program, resourceName: "assessmentType"});
+
+  constructor({param, displayName, dependentOn, resourceName: resourceName}) {
+    this.param = param;
+    this.displayName = displayName;
+    this.dependentOn = dependentOn;
+    this.resourceName = resourceName;
+  }
+
+  isIndependent() {
+    return _.isNil(this.dependentOn);
+  }
+
+  getUrl(stateId, selectedFilterValues) {
+    let baseUrl;
+    let urlSearchParams = new URLSearchParams();
+    if (_.isNil(this.dependentOn)) {
+      baseUrl = `/api/${this.resourceName}`;
+    } else {
+      baseUrl = `/api/${this.resourceName}/search/find`;
+      urlSearchParams.append(this.dependentOn.param, selectedFilterValues[this.dependentOn.param]);
+    }
+    return baseUrl + urlSearchParams.toString();
+  }
+
+  isParentValueSelected(selectedFilterValues) {
+    return _.isNil(this.dependentOn) || !_.isNil(selectedFilterValues[this.dependentOn.param]);
+  }
+
+  getParentValue(selectedFilterValues) {
+    return selectedFilterValues[this.dependentOn.param];
+  }
+}
+
 class Dashboard {
-  constructor({id, name, hasAssessmentTool = true, hasAssessmentType = true, height = '1000px', topLevel = true, boxData}) {
+  constructor({id, name, filters = [DashboardFilter.Program, DashboardFilter.AssessmentTool, DashboardFilter.AssessmentType], height = '1000px', topLevel = true, boxData}) {
     this.id = id;
     this.type = "dashboard";
     this.name = name;
-    this.hasAssessmentTool = hasAssessmentTool;
-    this.hasAssessmentType = hasAssessmentType;
+    this.filters = filters;
     this.height = height;
     this.topLevel = topLevel;
     this.boxData = boxData;
   };
+
+  getIndependentFilters() {
+    return _.filter(this.filters, (x) => x.isIndependent());
+  }
+
+  getDependentFilters() {
+    return _.filter(this.filters, (x) => !x.isIndependent());
+  }
+
+  createFilterObject(state, selectedFilterValues) {
+    if (_.isNil(state)) return null;
+    let params = {"state": state.name};
+    Object.keys(selectedFilterValues).forEach((filterParam) => {
+      params[filterParam] = selectedFilterValues[filterParam];
+    });
+    return params;
+  }
 }
 
 class DashboardBoxData {
@@ -31,7 +84,7 @@ class MetabaseResources {
     this.dashboards = [];
 
     let dashboardBoxData = new DashboardBoxData("ASSESSMENT DONE", "View assessments done in the state", <ImportExportIcon/>);
-    this.defaultDashboard = new Dashboard({id: 2, name: "main", hasAssessmentTool: false, hasAssessmentType: false, boxData: dashboardBoxData});
+    this.defaultDashboard = new Dashboard({id: 2, name: "main", filters: [DashboardFilter.Program], boxData: dashboardBoxData});
     this.dashboards.push(this.defaultDashboard);
 
     this.dashboards.push(new Dashboard({id: 9, name: "assessmentList", topLevel: false}));
@@ -52,17 +105,6 @@ class MetabaseResources {
 
   getTopLevelDashboards() {
     return _.filter(this.dashboards, (x) => x.topLevel);
-  }
-
-  createFilterObject(metabaseResource, state, assessmentToolMode, assessmentTool, assessmentType) {
-    if (_.isNil(state) || _.isNil(assessmentToolMode)) return null;
-    if (metabaseResource.hasAssessmentTool && _.isNil(assessmentTool)) return null;
-    if (metabaseResource.hasAssessmentType && _.isNil(assessmentType)) return null;
-
-    let params = {"state": state.name, "assessment_tool_mode": assessmentToolMode.name};
-    if (metabaseResource.hasAssessmentTool) params["assessment_tool"] = assessmentTool.name;
-    if (metabaseResource.hasAssessmentType) params["assessment_type"] = assessmentType.name;
-    return params;
   }
 
   isAllLoaded(metabaseResource, programs, assessmentTools, assessmentTypes) {

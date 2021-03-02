@@ -1,18 +1,8 @@
 import React from 'react';
 import clsx from 'clsx';
 import PropTypes from 'prop-types';
-import { Bar } from 'react-chartjs-2';
-import {
-  Box,
-  Button,
-  Card,
-  CardContent,
-  CardHeader,
-  Divider,
-  useTheme,
-  makeStyles,
-  colors
-} from '@material-ui/core';
+import {Bar} from 'react-chartjs-2';
+import {Box, Button, Card, CardContent, CardHeader, colors, Divider, makeStyles, useTheme} from '@material-ui/core';
 import ArrowDropDownIcon from '@material-ui/icons/ArrowDropDown';
 import ArrowRightIcon from '@material-ui/icons/ArrowRight';
 

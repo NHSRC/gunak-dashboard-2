@@ -32,7 +32,7 @@ const Dashboard = () => {
       <Container maxWidth={false}>
         <Grid container spacing={3}>
           {MetabaseResources.getTopLevelDashboards().map((x) =>
-            <DashboardBox title={x.boxData.title} description={x.boxData.description} icon={x.boxData.icon}
+            <DashboardBox title={x.boxData.title} description={x.boxData.description} icon={x.boxData.icon} key={x.name}
                           clickFn={() => switchToResource(x)} isCurrent={x.name === componentState.resource.name}/>
           )}
         </Grid>

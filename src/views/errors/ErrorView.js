@@ -1,5 +1,4 @@
 import React from 'react';
-import {useLocation} from 'react-router-dom';
 import {Box, Container, makeStyles, Typography} from '@material-ui/core';
 import Page from 'src/components/Page';
 import PropTypes from 'prop-types';

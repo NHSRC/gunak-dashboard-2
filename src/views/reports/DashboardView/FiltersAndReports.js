@@ -14,7 +14,6 @@ import CircularProgress from "@material-ui/core/CircularProgress/CircularProgres
 import ApiCallView from "../../ApiCallView";
 import _ from "lodash";
 import PropTypes from 'prop-types';
-import MetabaseResources from "../MetabaseResources";
 
 const useStyles = makeStyles((theme) => ({
   formControl: {
@@ -34,20 +33,9 @@ const useStyles = makeStyles((theme) => ({
 
 const FiltersAndReports = ({metabaseResource, ...rest}) => {
     const classes = useStyles();
-    // let effectiveResource = _.isEmpty(searchString) ? MetabaseResources.Main : MetabaseResources.AssessmentList;
 
-    const handleChangeInProgram = (event) => {
-      FiltersAndReportsState.setProgram(componentState, parseInt(event.target.value));
-      update(FiltersAndReportsState.clone(componentState));
-    };
-
-    const handleChangeInAssessmentTool = (event) => {
-      FiltersAndReportsState.setAssessmentTool(componentState, parseInt(event.target.value));
-      update(FiltersAndReportsState.clone(componentState));
-    };
-
-    const handleChangeInAssessmentType = (event) => {
-      FiltersAndReportsState.setAssessmentType(componentState, parseInt(event.target.value));
+    const handleChange = (filter, event) => {
+      FiltersAndReportsState.setValue(componentState, filter, parseInt(event.target.value));
       update(FiltersAndReportsState.clone(componentState));
     };
 
@@ -65,45 +53,40 @@ const FiltersAndReports = ({metabaseResource, ...rest}) => {
           return updateStateInError(stateResponse);
 
         componentState.state = stateResponse.data;
-        DataReadService.getPrograms().then((programResponse) => {
-          if (ApiResponse.hasError(programResponse))
-            return updateStateInError(programResponse);
 
-          componentState.lastApiResponse = programResponse;
-          componentState.programs = programResponse.data;
-          update(FiltersAndReportsState.clone(componentState));
+        let independentFilters = metabaseResource.getIndependentFilters();
+        independentFilters.forEach((x) => {
+          DataReadService.getEntities(x, componentState.filterSelectedValueMap).then((response) => {
+            if (ApiResponse.hasError(response))
+              return updateStateInError(response);
+
+            componentState.lastApiResponse = response;
+            componentState.filterValuesMap[x.param] = response.data;
+            componentState.filterSelectedValueMap[x.param] = response.data[0];
+            update(FiltersAndReportsState.clone(componentState));
+          });
         });
       });
     }, []);
 
     useEffect(() => {
-      console.log("loading assessment tools");
-      if (!FiltersAndReportsState.getCurrentProgram(componentState)) return;
+      metabaseResource.getDependentFilters().forEach((x) => {
+        console.log("loading filter values for", x.resourceName);
+        if (!x.isParentValueSelected(componentState.filterSelectedValueMap)) return;
 
-      DataReadService.getAssessmentTools(componentState.state.id, FiltersAndReportsState.getCurrentProgramId(componentState)).then((atResponse) => {
-        if (ApiResponse.hasError(atResponse))
-          return updateStateInError(atResponse);
+        DataReadService.getEntities(x, componentState.filterSelectedValueMap).then((response) => {
+          if (ApiResponse.hasError(response))
+            return updateStateInError(response);
 
-        componentState.assessmentTools = atResponse.data;
-        update(FiltersAndReportsState.clone(componentState));
+          componentState.lastApiResponse = response;
+          componentState.filterValuesMap[x.param] = response.data;
+          update(FiltersAndReportsState.clone(componentState));
+        });
       });
-    }, [FiltersAndReportsState.getUserSelectedProgramId(componentState), metabaseResource.id]);
+    }, [metabaseResource.id]);
 
     useEffect(() => {
-      console.log("loading assessment types");
-      if (!FiltersAndReportsState.getCurrentProgram(componentState)) return;
-
-      DataReadService.getAssessmentTypes(FiltersAndReportsState.getCurrentProgramId(componentState)).then((aTypeResponse) => {
-        if (ApiResponse.hasError(aTypeResponse))
-          return updateStateInError(aTypeResponse);
-
-        componentState.assessmentTypes = aTypeResponse.data;
-        update(FiltersAndReportsState.clone(componentState));
-      });
-    }, [FiltersAndReportsState.getUserSelectedProgramId(componentState), metabaseResource.id]);
-
-    useEffect(() => {
-      let params = MetabaseResources.createFilterObject(metabaseResource, componentState.state, FiltersAndReportsState.getCurrentProgram(componentState), FiltersAndReportsState.getCurrentAssessmentTool(componentState), FiltersAndReportsState.getCurrentAssessmentType(componentState));
+      let params = metabaseResource.createFilterObject(componentState.state, componentState.filterSelectedValueMap);
       if (_.isNil(params)) return;
 
       MetabaseDashboardService.getResourceIframeUrl(params, metabaseResource, searchString).then((metabaseUrlResponse) => {
@@ -114,57 +97,31 @@ const FiltersAndReports = ({metabaseResource, ...rest}) => {
         componentState.lastApiResponse = metabaseUrlResponse;
         update(FiltersAndReportsState.clone(componentState));
       });
-    }, [FiltersAndReportsState.getUserSelectedAssessmentToolId(componentState), FiltersAndReportsState.getUserSelectedAssessmentTypeId(componentState), FiltersAndReportsState.getUserSelectedProgramId(componentState), metabaseResource.id, MetabaseResources.isAllLoaded(metabaseResource, componentState.programs, componentState.assessmentTools, componentState.assessmentTypes)]);
+    }, [metabaseResource.id, componentState.state]);
+
+    // MetabaseResources.isAllLoaded(metabaseResource, componentState.programs, componentState.assessmentTools, componentState.assessmentTypes)
 
     let view = ApiCallView.handleApiCall(componentState.lastApiResponse);
     if (!_.isNil(view)) return view;
 
     return <>
       <Grid container spacing={3}>
-        <Grid item>
-          <FormControl variant="outlined" className={classes.formControl}>
-            <InputLabel id="program"><b>PROGRAM</b></InputLabel>
-            <Select
-              labelId="program-select"
-              id="program-select"
-              value={FiltersAndReportsState.getCurrentProgramId(componentState)}
-              onChange={handleChangeInProgram}
-              label="Program"
-              className={classes.formControlSelect}
-            >{componentState.programs.map((program) => <MenuItem key={`program-${program.id}`} value={program.id}>{program.name}</MenuItem>)}
-            </Select>
-          </FormControl>
-        </Grid>
-        {metabaseResource.hasAssessmentTool && componentState.assessmentTools &&
-        <Grid item>
-          <FormControl variant="outlined" className={classes.formControl}>
-            <InputLabel id="assessmentTool"><b>ASSESSMENT TOOL</b></InputLabel>
-            <Select
-              labelId="assessment-tool-select"
-              id="assessment-tool-select"
-              value={FiltersAndReportsState.getCurrentAssessmentToolId(componentState)}
-              onChange={handleChangeInAssessmentTool}
-              label="Assessment Tool"
-              className={classes.formControlSelect}
-            >{componentState.assessmentTools.map((at) => <MenuItem key={`at-${at.id}`} value={at.id}>{at.name}</MenuItem>)}
-            </Select>
-          </FormControl>
-        </Grid>}
-        {metabaseResource.hasAssessmentType && componentState.assessmentTypes &&
-        <Grid item>
-          <FormControl variant="outlined" className={classes.formControl}>
-            <InputLabel id="assessmentType"><b>ASSESSMENT TYPE</b></InputLabel>
-            <Select
-              labelId="assessment-type-select"
-              id="assessment-type-select"
-              value={FiltersAndReportsState.getCurrentAssessmentTypeId(componentState)}
-              onChange={handleChangeInAssessmentType}
-              label="Assessment Tool"
-              className={classes.formControlSelect}
-            >{componentState.assessmentTypes.map((aType) => <MenuItem key={`aType-${aType.id}`} value={aType.id}>{aType.name}</MenuItem>)}
-            </Select>
-          </FormControl>
-        </Grid>}
+        {metabaseResource.filters.map((x) => {
+          return <Grid item key={x.param}>
+              <FormControl variant="outlined" className={classes.formControl}>
+                <InputLabel id={x.param}><b>{x.displayName}</b></InputLabel>
+                <Select
+                  labelId={`${x.param}-select`}
+                  id={`${x.param}-select`}
+                  value={FiltersAndReportsState.getSelectedId(componentState, x)}
+                  onChange={(event) => handleChange(x, event)}
+                  label={x.displayName}
+                  className={classes.formControlSelect}
+                >{FiltersAndReportsState.getValues(componentState, x).map((y) => <MenuItem key={`program-${y.id}`} value={y.id}>{y.name}</MenuItem>)}
+                </Select>
+              </FormControl>
+            </Grid>
+        })}
       </Grid>
       {(!_.isNil(componentState.metabaseUrl)) ?
         <iframe src={componentState.metabaseUrl} title='Metabase' style={{border: 'none', width: '100%', height: metabaseResource.height}} onLoad={() => {
