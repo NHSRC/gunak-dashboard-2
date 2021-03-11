@@ -89,7 +89,7 @@ const FiltersAndReports = ({metabaseResource, ...rest}) => {
           return Promise.resolve();
         });
       }), Promise.resolve()).then(() => {
-        let params = metabaseResource.createFilterObject(componentState.state, componentState.filterSelectedValueMap);
+        let params = metabaseResource.createMetabaseFilterObject(componentState.state, componentState.filterSelectedValueMap);
         return MetabaseDashboardService.getIframeResource(params, metabaseResource).then((metabaseUrlResponse) => {
           if (ApiResponse.hasError(metabaseUrlResponse)) {
             componentState.lastApiResponse = metabaseUrlResponse;

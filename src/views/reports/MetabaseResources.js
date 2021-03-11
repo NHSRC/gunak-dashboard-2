@@ -63,11 +63,11 @@ class Dashboard {
     return _.filter(this.filters, (x) => !_.isNil(x.dependentOn) && x.dependentOn.param === filter.param);
   }
 
-  createFilterObject(state, selectedFilterValues) {
+  createMetabaseFilterObject(state, selectedFilterValues) {
     if (_.isNil(state)) return null;
     let params = {"state": state.name};
-    Object.keys(selectedFilterValues).forEach((filterParam) => {
-      params[filterParam] = selectedFilterValues[filterParam].name;
+    this.filters.forEach(filter => {
+      params[filter.param] = selectedFilterValues[filter.param].name;
     });
     return params;
   }

@@ -19,6 +19,7 @@ export default class FiltersAndReportsState {
 
     filtersAndReportsState.filterValuesMap = {...other.filterValuesMap};
     filtersAndReportsState.filterSelectedValueMap = {...other.filterSelectedValueMap};
+    filtersAndReportsState.metabaseResourceId = other.metabaseResourceId;
     return filtersAndReportsState;
   }
 
