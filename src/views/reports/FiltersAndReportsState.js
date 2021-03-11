@@ -44,7 +44,11 @@ export default class FiltersAndReportsState {
     return thisObject.filterSelectedValueMap[filter.param];
   }
 
-  static getSelectedFilterEntityIds(thisObject) {
-    return Object.keys(thisObject.filterSelectedValueMap).map((key) => thisObject.filterSelectedValueMap[key]);
+  static getSelectedFilterIds(thisObject, metabaseResource) {
+    let numbers = metabaseResource.filters.map((filter) => {
+      return thisObject.filterSelectedValueMap[filter.param] ? thisObject.filterSelectedValueMap[filter.param].id : 0;
+    });
+    console.log("getSelectedFilterIds", numbers);
+    return numbers;
   }
 }

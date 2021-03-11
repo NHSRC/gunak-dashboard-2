@@ -97,7 +97,7 @@ const FiltersAndReports = ({metabaseResource, ...rest}) => {
         componentState.lastApiResponse = metabaseUrlResponse;
         update(FiltersAndReportsState.clone(componentState));
       });
-    }, [metabaseResource.id, FiltersAndReportsState.getSelectedFilterEntityIds(componentState)]);
+    }, [metabaseResource.id, ...FiltersAndReportsState.getSelectedFilterIds(componentState, metabaseResource)]);
 
     let view = ApiCallView.handleApiCall(componentState.lastApiResponse);
     if (!_.isNil(view)) return view;
