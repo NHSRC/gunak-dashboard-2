@@ -33,8 +33,12 @@ export default class FiltersAndReportsState {
     return filterValues || [];
   }
 
-  static setValue(thisObject, filter, entityId) {
+  static setValue(thisObject, filter, entityId, metabaseResource) {
     thisObject.filterSelectedValueMap[filter.param] = _.find(thisObject.filterValuesMap[filter.param], (x) => x.id === entityId);
+
+    let otherFilterParams = _.filter(Object.keys(thisObject.filterSelectedValueMap), (x) => x !== filter.param);
+    let dependentFilters = metabaseResource.getDependentFiltersOn(filter);
+    dependentFilters.forEach((x) => thisObject.filterSelectedValueMap[x.param] = null);
   }
 
   static getUserSelectedEntityId(thisObject, filter) {

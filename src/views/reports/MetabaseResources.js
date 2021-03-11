@@ -59,6 +59,10 @@ class Dashboard {
     return _.filter(this.filters, (x) => !x.isIndependent());
   }
 
+  getDependentFiltersOn(filter) {
+    return _.filter(this.filters, (x) => !_.isNil(x.dependentOn) && x.dependentOn.param === filter.param);
+  }
+
   createFilterObject(state, selectedFilterValues) {
     if (_.isNil(state)) return null;
     let params = {"state": state.name};
