@@ -7,8 +7,8 @@ export default class DataReadService {
     return getJson(`/api/state/${user.getStateId()}`);
   }
 
-  static getEntities(filter, filterValues) {
-    return getJson(filter.getUrl(filterValues), filter.resourceName);
+  static getEntities(filter, filterValues, stateId) {
+    return getJson(filter.getUrl(filterValues, stateId), filter.resourceName);
   }
 
   static getPrograms() {

@@ -56,7 +56,7 @@ const FiltersAndReports = ({metabaseResource, ...rest}) => {
 
         let independentFilters = metabaseResource.getIndependentFilters();
         independentFilters.forEach((x) => {
-          DataReadService.getEntities(x, componentState.filterSelectedValueMap).then((response) => {
+          DataReadService.getEntities(x, componentState.filterSelectedValueMap, componentState.state.id).then((response) => {
             if (ApiResponse.hasError(response))
               return updateStateInError(response);
 
@@ -71,10 +71,9 @@ const FiltersAndReports = ({metabaseResource, ...rest}) => {
 
     useEffect(() => {
       metabaseResource.getDependentFilters().forEach((x) => {
-        console.log("loading filter values for", x.resourceName);
         if (!x.isParentValueSelected(componentState.filterSelectedValueMap)) return;
 
-        DataReadService.getEntities(x, componentState.filterSelectedValueMap).then((response) => {
+        DataReadService.getEntities(x, componentState.filterSelectedValueMap, componentState.state.id).then((response) => {
           if (ApiResponse.hasError(response))
             return updateStateInError(response);
 
@@ -97,10 +96,13 @@ const FiltersAndReports = ({metabaseResource, ...rest}) => {
         componentState.lastApiResponse = metabaseUrlResponse;
         update(FiltersAndReportsState.clone(componentState));
       });
-    }, [metabaseResource.id, ...FiltersAndReportsState.getSelectedFilterIds(componentState, metabaseResource)]);
+    }, [metabaseResource.id, ...FiltersAndReportsState.getSelectedFilterIds(componentState)]);
 
     let view = ApiCallView.handleApiCall(componentState.lastApiResponse);
     if (!_.isNil(view)) return view;
+
+    console.log("FiltersAndReports", metabaseResource);
+    console.log("FiltersAndReports", componentState);
 
     return <>
       <Grid container spacing={3}>

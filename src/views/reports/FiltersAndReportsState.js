@@ -1,4 +1,5 @@
 import _ from "lodash";
+import MetabaseResources from "./MetabaseResources";
 
 export default class FiltersAndReportsState {
   constructor() {
@@ -44,11 +45,9 @@ export default class FiltersAndReportsState {
     return thisObject.filterSelectedValueMap[filter.param];
   }
 
-  static getSelectedFilterIds(thisObject, metabaseResource) {
-    let numbers = metabaseResource.filters.map((filter) => {
-      return thisObject.filterSelectedValueMap[filter.param] ? thisObject.filterSelectedValueMap[filter.param].id : 0;
+  static getSelectedFilterIds(thisObject) {
+    return MetabaseResources.getUniqueFilterParams().map((param) => {
+      return thisObject.filterSelectedValueMap[param] ? thisObject.filterSelectedValueMap[param].id : 0;
     });
-    console.log("getSelectedFilterIds", numbers);
-    return numbers;
   }
 }

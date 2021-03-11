@@ -22,7 +22,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const DashboardBox = ({className, title, icon, description, clickFn, isCurrent, ...rest}) => {
+const DashboardBox = ({className, title, icon, description, isCurrent, searchParams, ...rest}) => {
   const classes = useStyles();
 
   return (
@@ -50,7 +50,7 @@ const DashboardBox = ({className, title, icon, description, clickFn, isCurrent, 
                 gutterBottom
                 variant="h6"
                 underline="always"
-              ><RRDLink to="/app/dashboard/foo">{title}</RRDLink></Link>
+              ><RRDLink to={`/app/dashboard?${searchParams}`}>{title}</RRDLink></Link>
               <Typography
                 color="textPrimary"
                 variant="h5">{description}</Typography>
@@ -68,7 +68,7 @@ DashboardBox.propTypes = {
   icon: PropTypes.object.isRequired,
   description: PropTypes.string.isRequired,
   isCurrent: PropTypes.bool.isRequired,
-  clickFn: PropTypes.func.isRequired
+  searchParams: PropTypes.string.isRequired
 };
 
 export default DashboardBox;

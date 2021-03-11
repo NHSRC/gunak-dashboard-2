@@ -21,16 +21,14 @@ class DashboardFilter {
     return _.isNil(this.dependentOn);
   }
 
-  getUrl(stateId, selectedFilterValues) {
-    let baseUrl;
+  getUrl(selectedFilterValues, stateId) {
     let urlSearchParams = new URLSearchParams();
-    if (_.isNil(this.dependentOn)) {
-      baseUrl = `/api/${this.resourceName}`;
-    } else {
-      baseUrl = `/api/${this.resourceName}/search/find`;
-      urlSearchParams.append(this.dependentOn.param, selectedFilterValues[this.dependentOn.param]);
+    let baseUrl = `/api/${this.resourceName}/search/find`;
+    urlSearchParams.append("state", stateId);
+    if (!_.isNil(this.dependentOn)) {
+      urlSearchParams.append(this.dependentOn.param, selectedFilterValues[this.dependentOn.param].id);
     }
-    return baseUrl + urlSearchParams.toString();
+    return baseUrl + "?" + urlSearchParams.toString();
   }
 
   isParentValueSelected(selectedFilterValues) {
@@ -111,6 +109,10 @@ class MetabaseResources {
     let loaded = this._isAllLoaded(metabaseResource, programs, assessmentTools, assessmentTypes);
     console.log(loaded);
     return loaded;
+  }
+
+  getUniqueFilterParams() {
+    return _.sortBy(_.reduce(this.dashboards, (result, dashboard) => _.union(result, dashboard.filters.map((filter) => filter.param)), []));
   }
 
   _isAllLoaded(metabaseResource, programs, assessmentTools, assessmentTypes) {

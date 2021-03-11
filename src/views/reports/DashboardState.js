@@ -2,9 +2,12 @@ import MetabaseResources from "./MetabaseResources";
 
 export default class DashboardState {
   static newInstance(queryParams) {
-    let urlSearchParams = new URLSearchParams(queryParams);
-
     let dashboardState = new DashboardState();
+    return DashboardState.update(dashboardState, queryParams);
+  }
+
+  static update(dashboardState, queryParams) {
+    let urlSearchParams = new URLSearchParams(queryParams);
     dashboardState.resource = MetabaseResources.getResource(urlSearchParams.get("name"));
     dashboardState.params = urlSearchParams;
     return dashboardState;

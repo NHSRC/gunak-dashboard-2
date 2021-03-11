@@ -37,6 +37,10 @@ const useStyles = makeStyles((theme) => ({
 const DashboardLayout = ({children}) => {
   const classes = useStyles();
 
+  const componentDidUpdate = function(prevProps, prevState) {
+    console.log("componentDidUpdate");
+  };
+
   return (
     <div className={classes.root}>
       <TopBar onMobileNavOpen={() => {}} user={LoginService.getUser()}/>
