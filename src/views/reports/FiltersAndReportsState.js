@@ -32,16 +32,19 @@ export default class FiltersAndReportsState {
     return filterValues || [];
   }
 
-  static setValue(filtersAndReportsState, filter, entityId) {
-    filtersAndReportsState.filterSelectedValueMap[filter.param] = _.find(filtersAndReportsState.filterValuesMap[filter.param], (x) => x.id === entityId);
-    filtersAndReportsState.filterUpdated = false;
+  static setValue(thisObject, filter, entityId) {
+    thisObject.filterSelectedValueMap[filter.param] = _.find(thisObject.filterValuesMap[filter.param], (x) => x.id === entityId);
   }
 
-  static getUserSelectedEntityId(filtersAndReportsState, filter) {
-    return _.isNil(filtersAndReportsState.filterSelectedValueMap[filter.param]) ? 0 : filtersAndReportsState.filterSelectedValueMap[filter.param];
+  static getUserSelectedEntityId(thisObject, filter) {
+    return _.isNil(thisObject.filterSelectedValueMap[filter.param]) ? 0 : thisObject.filterSelectedValueMap[filter.param];
   }
 
-  static getCurrentEntity(filtersAndReportsState, filter) {
-    return filtersAndReportsState.filterSelectedValueMap[filter.param];
+  static getCurrentEntity(thisObject, filter) {
+    return thisObject.filterSelectedValueMap[filter.param];
+  }
+
+  static getSelectedFilterEntityIds(thisObject) {
+    return Object.keys(thisObject.filterSelectedValueMap).map((key) => thisObject.filterSelectedValueMap[key]);
   }
 }

@@ -8,9 +8,6 @@ export function paramsToUrlFragment(params) {
 
 export function getJson(url, embeddedObjectName) {
   console.log("Getting Json response from: ", url);
-  const getRequest = new Request(url, {
-    method: 'GET'
-  });
   let apiResponse = new ApiResponse();
   return fetch(url)
     .then(response => {

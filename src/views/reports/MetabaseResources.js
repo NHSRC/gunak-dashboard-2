@@ -10,7 +10,7 @@ class DashboardFilter {
   static AssessmentTool = new DashboardFilter({param: "assessment_tool", displayName: "Assessment Tool", dependentOn: DashboardFilter.Program, resourceName: "assessmentTool"});
   static AssessmentType = new DashboardFilter({param: "assessment_type", displayName: "Assessment Type", dependentOn: DashboardFilter.Program, resourceName: "assessmentType"});
 
-  constructor({param, displayName, dependentOn, resourceName: resourceName}) {
+  constructor({param, displayName, dependentOn, resourceName}) {
     this.param = param;
     this.displayName = displayName;
     this.dependentOn = dependentOn;
@@ -65,7 +65,7 @@ class Dashboard {
     if (_.isNil(state)) return null;
     let params = {"state": state.name};
     Object.keys(selectedFilterValues).forEach((filterParam) => {
-      params[filterParam] = selectedFilterValues[filterParam];
+      params[filterParam] = selectedFilterValues[filterParam].name;
     });
     return params;
   }
