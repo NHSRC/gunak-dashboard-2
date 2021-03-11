@@ -82,13 +82,13 @@ const FiltersAndReports = ({metabaseResource, ...rest}) => {
           update(FiltersAndReportsState.clone(componentState));
         });
       });
-    }, [metabaseResource.id]);
+    }, [metabaseResource.id, ...FiltersAndReportsState.getSelectedFilterIds(componentState)]);
 
     useEffect(() => {
       let params = metabaseResource.createFilterObject(componentState.state, componentState.filterSelectedValueMap);
       if (_.isNil(params)) return;
 
-      MetabaseDashboardService.getResourceIframeUrl(params, metabaseResource, searchString).then((metabaseUrlResponse) => {
+      MetabaseDashboardService.getIframeResource(params, metabaseResource).then((metabaseUrlResponse) => {
         if (ApiResponse.hasError(metabaseUrlResponse))
           return updateStateInError(metabaseUrlResponse);
 
@@ -100,9 +100,6 @@ const FiltersAndReports = ({metabaseResource, ...rest}) => {
 
     let view = ApiCallView.handleApiCall(componentState.lastApiResponse);
     if (!_.isNil(view)) return view;
-
-    console.log("FiltersAndReports", metabaseResource);
-    console.log("FiltersAndReports", componentState);
 
     return <>
       <Grid container spacing={3}>
