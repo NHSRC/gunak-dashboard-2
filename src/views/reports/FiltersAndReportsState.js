@@ -8,11 +8,14 @@ export default class FiltersAndReportsState {
   }
 
   static newInstance(searchString) {
-    return new FiltersAndReportsState();
+    let filtersAndReportsState = new FiltersAndReportsState();
+    filtersAndReportsState.searchString = searchString;
+    return filtersAndReportsState;
   }
 
   static clone(other) {
     let filtersAndReportsState = new FiltersAndReportsState();
+    filtersAndReportsState.searchString = other.searchString;
     filtersAndReportsState.lastApiResponse = other.lastApiResponse;
     filtersAndReportsState.metabaseUrl = other.metabaseUrl;
     filtersAndReportsState.state = other.state;

@@ -15,7 +15,8 @@ const useStyles = makeStyles((theme) => ({
     backgroundColor: theme.palette.background.dark,
     minHeight: '100%',
     paddingBottom: theme.spacing(3),
-    paddingTop: theme.spacing(3)
+    paddingTop: theme.spacing(3),
+    flexGrow: 1
   }
 }));
 
@@ -33,14 +34,16 @@ const Dashboard = () => {
   return (
     <Page className={classes.root} title="Dashboard">
       <Container maxWidth={false}>
-        <Grid container spacing={3}>
+        {componentState.resource.topLevel &&
+        <><Grid container spacing={3}>
           {MetabaseResources.getTopLevelDashboards().map((x) =>
             <DashboardBox title={x.boxData.title} description={x.boxData.description} icon={x.boxData.icon} key={x.name}
                           isCurrent={x.name === componentState.resource.name} searchParams={`name=${x.name}`}/>
           )}
         </Grid>
-        <br/>
-        <br/>
+          <br/>
+          <br/>
+        </>}
         <br/>
         <FiltersAndReports metabaseResource={componentState.resource}/>
       </Container>

@@ -7,18 +7,38 @@ import React from "react";
 
 class DashboardFilter {
   static Program = new DashboardFilter({param: "assessment_tool_mode", displayName: "Program", resourceName: "assessmentToolMode"});
-  static AssessmentTool = new DashboardFilter({param: "assessment_tool", displayName: "Assessment Tool", dependentOn: DashboardFilter.Program, resourceName: "assessmentTool"});
-  static AssessmentType = new DashboardFilter({param: "assessment_type", displayName: "Assessment Type", dependentOn: DashboardFilter.Program, resourceName: "assessmentType"});
+  static AssessmentTool = new DashboardFilter({
+    param: "assessment_tool",
+    displayName: "Assessment Tool",
+    dependentOn: DashboardFilter.Program,
+    resourceName: "assessmentTool"
+  });
+  static AssessmentType = new DashboardFilter({
+    param: "assessment_type",
+    displayName: "Assessment Type",
+    dependentOn: DashboardFilter.Program,
+    resourceName: "assessmentType"
+  });
+  static AssessmentExport = new DashboardFilter({
+    param: "assessment_id",
+    displayName: "Assessment Id",
+    singleValue: true
+  });
 
-  constructor({param, displayName, dependentOn, resourceName}) {
+  constructor({param, displayName, dependentOn, resourceName, singleValue = false}) {
     this.param = param;
     this.displayName = displayName;
     this.dependentOn = dependentOn;
     this.resourceName = resourceName;
+    this.singleValue = singleValue;
   }
 
   isIndependent() {
-    return _.isNil(this.dependentOn);
+    return _.isNil(this.dependentOn) && !this.singleValue;
+  }
+
+  isDependent() {
+    return !_.isNil(this.dependentOn) && !this.singleValue;
   }
 
   getUrl(selectedFilterValues, stateId) {
@@ -41,7 +61,7 @@ class DashboardFilter {
 }
 
 class Dashboard {
-  constructor({id, name, filters = [DashboardFilter.Program, DashboardFilter.AssessmentTool, DashboardFilter.AssessmentType], height = '1000px', topLevel = true, boxData}) {
+  constructor({id, name, filters = [DashboardFilter.Program, DashboardFilter.AssessmentTool, DashboardFilter.AssessmentType], height = '1000px', topLevel = true, boxData, independentOfState = false}) {
     this.id = id;
     this.type = "dashboard";
     this.name = name;
@@ -49,6 +69,7 @@ class Dashboard {
     this.height = height;
     this.topLevel = topLevel;
     this.boxData = boxData;
+    this.independentOfState = independentOfState;
   };
 
   getIndependentFilters() {
@@ -56,20 +77,35 @@ class Dashboard {
   }
 
   getDependentFilters() {
-    return _.filter(this.filters, (x) => !x.isIndependent());
+    return _.filter(this.filters, (x) => x.isDependent());
   }
 
   getDependentFiltersOn(filter) {
     return _.filter(this.filters, (x) => !_.isNil(x.dependentOn) && x.dependentOn.param === filter.param);
   }
 
-  createMetabaseFilterObject(state, selectedFilterValues) {
-    if (_.isNil(state)) return null;
-    let params = {"state": state.name};
+  createMetabaseFilterObject(state, selectedFilterValues, searchString) {
+    let params = {};
+    if (!_.isNil(state) && !this.independentOfState)
+      params["state"] = state.name;
     this.filters.forEach(filter => {
       params[filter.param] = selectedFilterValues[filter.param].name;
     });
+    let urlSearchParams = new URLSearchParams(searchString);
+    urlSearchParams.forEach((value, key) => {
+      if (key !== "name")
+        params[key] = value;
+    });
     return params;
+  }
+
+  getDisplayLabels(selectedFilterValues) {
+    return this.filters.map((x) => {
+      if (selectedFilterValues[x.param]) {
+        return `${x.displayName}: ${selectedFilterValues[x.param].name}`;
+      }
+      return '';
+    });
   }
 }
 
@@ -89,7 +125,7 @@ class MetabaseResources {
     this.defaultDashboard = new Dashboard({id: 2, name: "main", filters: [DashboardFilter.Program], boxData: dashboardBoxData});
     this.dashboards.push(this.defaultDashboard);
 
-    this.dashboards.push(new Dashboard({id: 9, name: "assessmentList", topLevel: false}));
+    this.dashboards.push(new Dashboard({id: 7, name: "assessmentList", topLevel: false, filters: []}));
 
     dashboardBoxData = new DashboardBoxData("ASSESSMENT STATISTICS", "Average, median scores, etc - by department, standard, area of concern, and overall", <MoneyIcon/>);
     this.dashboards.push(new Dashboard({id: 5, name: "statistics", height: '2300px', boxData: dashboardBoxData}));
@@ -98,7 +134,7 @@ class MetabaseResources {
     this.dashboards.push(new Dashboard({id: 4, name: "facilitiesRanking", boxData: dashboardBoxData}));
 
     dashboardBoxData = new DashboardBoxData("EXPORT ASSESSMENT DATA", "View and download complete assessment", <CloudDownloadIcon/>);
-    this.dashboards.push(new Dashboard({id: 6, name: "exportAssessments", boxData: dashboardBoxData}));
+    this.dashboards.push(new Dashboard({id: 6, name: "exportAssessment", boxData: dashboardBoxData, filters: [DashboardFilter.AssessmentExport], topLevel: false, independentOfState: true}));
   }
 
   getResource(name) {
@@ -110,9 +146,7 @@ class MetabaseResources {
   }
 
   isAllLoaded(metabaseResource, programs, assessmentTools, assessmentTypes) {
-    let loaded = this._isAllLoaded(metabaseResource, programs, assessmentTools, assessmentTypes);
-    console.log(loaded);
-    return loaded;
+    return this._isAllLoaded(metabaseResource, programs, assessmentTools, assessmentTypes);
   }
 
   getUniqueFilterParams() {

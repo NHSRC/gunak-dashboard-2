@@ -2,6 +2,7 @@ import {getText} from "../utils/FetchHelper";
 import _ from 'lodash';
 
 //#hide_parameters=id
+// http://localhost:6006/app/dashboard?name=assessmentList
 
 export default class MetabaseDashboardService {
   static getIframeResource(params, resource) {

@@ -16,6 +16,9 @@ import _ from "lodash";
 import PropTypes from 'prop-types';
 
 const useStyles = makeStyles((theme) => ({
+  root: {
+    flexGrow: 1
+  },
   formControl: {
     margin: theme.spacing(1),
     minWidth: 120,
@@ -44,7 +47,7 @@ const FiltersAndReports = ({metabaseResource, ...rest}) => {
       update(FiltersAndReportsState.clone(componentState));
     };
 
-    let searchString = useLocation().search.substring(1);
+    let searchString = useLocation().search;
     const [componentState, update] = useState(FiltersAndReportsState.newInstance(searchString));
 
     useEffect(() => {
@@ -55,6 +58,9 @@ const FiltersAndReports = ({metabaseResource, ...rest}) => {
         componentState.state = stateResponse.data;
 
         let independentFilters = metabaseResource.getIndependentFilters();
+        if (independentFilters.length === 0) {
+          update(FiltersAndReportsState.clone(componentState));
+        }
         independentFilters.forEach((x) => {
           DataReadService.getEntities(x, componentState.filterSelectedValueMap, componentState.state.id).then((response) => {
             if (ApiResponse.hasError(response))
@@ -71,25 +77,30 @@ const FiltersAndReports = ({metabaseResource, ...rest}) => {
     }, []);
 
     useEffect(() => {
-      _.reduce(metabaseResource.getDependentFilters(), (result, filter) => result.then(() => {
-        if (!filter.isParentValueSelected(componentState.filterSelectedValueMap)) return Promise.resolve();
+      let dependentFilters = metabaseResource.getDependentFilters();
+      let reducedPromise = Promise.resolve();
+      if (dependentFilters.length !== 0) {
+        reducedPromise = _.reduce(dependentFilters, (result, filter) => result.then(() => {
+          if (!filter.isParentValueSelected(componentState.filterSelectedValueMap)) return Promise.resolve();
 
-        return DataReadService.getEntities(filter, componentState.filterSelectedValueMap, componentState.state.id).then((response) => {
-          if (ApiResponse.hasError(response)) {
+          return DataReadService.getEntities(filter, componentState.filterSelectedValueMap, componentState.state.id).then((response) => {
+            if (ApiResponse.hasError(response)) {
+              componentState.lastApiResponse = response;
+              return Promise.reject();
+            }
+
             componentState.lastApiResponse = response;
-            return Promise.reject();
-          }
-
-          componentState.lastApiResponse = response;
-          componentState.filterValuesMap[filter.param] = response.data;
-          if (response.data.length > 0 && _.isNil(componentState.filterSelectedValueMap[filter.param])) {
-            console.log("Nothing selected", filter.param);
-            componentState.filterSelectedValueMap[filter.param] = response.data[0];
-          }
-          return Promise.resolve();
-        });
-      }), Promise.resolve()).then(() => {
-        let params = metabaseResource.createMetabaseFilterObject(componentState.state, componentState.filterSelectedValueMap);
+            componentState.filterValuesMap[filter.param] = response.data;
+            if (response.data.length > 0 && _.isNil(componentState.filterSelectedValueMap[filter.param])) {
+              console.log("Nothing selected", filter.param);
+              componentState.filterSelectedValueMap[filter.param] = response.data[0];
+            }
+            return Promise.resolve();
+          });
+        }), Promise.resolve());
+      }
+      reducedPromise.then(() => {
+        let params = metabaseResource.createMetabaseFilterObject(componentState.state, componentState.filterSelectedValueMap, componentState.searchString);
         return MetabaseDashboardService.getIframeResource(params, metabaseResource).then((metabaseUrlResponse) => {
           if (ApiResponse.hasError(metabaseUrlResponse)) {
             componentState.lastApiResponse = metabaseUrlResponse;
@@ -102,15 +113,18 @@ const FiltersAndReports = ({metabaseResource, ...rest}) => {
         });
       }).then(() => {
         update(FiltersAndReportsState.clone(componentState));
-      }).catch(() => updateStateInError(componentState.lastApiResponse));
-    }, [metabaseResource.id, ...FiltersAndReportsState.getSelectedFilterIds(componentState)]);
+      }).catch((error) => {
+        console.log(error);
+        updateStateInError(componentState.lastApiResponse)
+      });
+    }, [metabaseResource.id, componentState.state ? componentState.state.id : 0, ...FiltersAndReportsState.getSelectedFilterIds(componentState)]);
 
     let view = ApiCallView.handleApiCall(componentState.lastApiResponse);
     if (!_.isNil(view)) return view;
 
     return <>
       <Grid container spacing={3}>
-        {metabaseResource.filters.map((x) => {
+        {metabaseResource.topLevel && metabaseResource.filters.map((x) => {
           return <Grid item key={x.param}>
             <FormControl variant="outlined" className={classes.formControl}>
               <InputLabel id={x.param}><b>{x.displayName}</b></InputLabel>
@@ -126,10 +140,17 @@ const FiltersAndReports = ({metabaseResource, ...rest}) => {
             </FormControl>
           </Grid>
         })}
+        {!metabaseResource.topLevel && metabaseResource.getDisplayLabels(componentState.filterSelectedValueMap).map((label, index) => {
+          return <Grid item key={`selected-filters-${index}`}>
+            {label}
+          </Grid>
+        })}
       </Grid>
       {(!_.isNil(componentState.metabaseUrl)) ?
-        <iframe src={componentState.metabaseUrl} title='Metabase' style={{border: 'none', width: '100%', height: metabaseResource.height}} onLoad={() => {
-        }}/>
+        <Grid container>
+          <iframe src={componentState.metabaseUrl} title='Metabase' style={{border: 'none', width: '100%', height: metabaseResource.height}} onLoad={() => {
+          }}/>
+        </Grid>
         : <div><Typography
           color="textPrimary"
           gutterBottom
