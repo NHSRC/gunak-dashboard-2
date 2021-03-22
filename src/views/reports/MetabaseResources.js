@@ -103,7 +103,7 @@ class Dashboard {
     });
     let urlSearchParams = new URLSearchParams(searchString);
     urlSearchParams.forEach((value, key) => {
-      if (key !== "name")
+      if (key !== "name" && key !== "state")
         params[key] = value;
     });
     return params;
