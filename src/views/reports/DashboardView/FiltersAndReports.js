@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const FiltersAndReports = ({metabaseResource, ...rest}) => {
+const FiltersAndReports = ({metabaseResource}) => {
     const classes = useStyles();
 
     const handleChange = (filter, event) => {
@@ -43,84 +43,72 @@ const FiltersAndReports = ({metabaseResource, ...rest}) => {
       update(FiltersAndReportsState.clone(componentState));
     };
 
-    const updateStateInError = function (apiResponse) {
-      componentState.lastApiResponse = apiResponse;
-      update(FiltersAndReportsState.clone(componentState));
-    };
-
     let searchString = useLocation().search;
     const [componentState, update] = useState(FiltersAndReportsState.newInstance(searchString));
 
-    useEffect(() => {
-      DataReadService.getState().then((stateResponse) => {
-        if (ApiResponse.hasError(stateResponse))
-          return updateStateInError(stateResponse);
+    const loadMetabaseDashboard = function () {
+      console.log("loadMetabaseDashboard");
+      let params = metabaseResource.createMetabaseFilterObject(componentState.state, componentState.filterSelectedValueMap, componentState.searchString);
+      return MetabaseDashboardService.getIframeResource(params, metabaseResource).then((metabaseUrlResponse) => {
+        if (ApiResponse.hasError(metabaseUrlResponse))
+          return Promise.reject(`Server returned error with status code: ${metabaseUrlResponse.status}`);
 
-        componentState.state = stateResponse.data;
-
-        let independentFilters = metabaseResource.getIndependentFilters();
-        if (independentFilters.length === 0) {
-          update(FiltersAndReportsState.clone(componentState));
-        }
-        independentFilters.forEach((x) => {
-          DataReadService.getEntities(x, componentState.filterSelectedValueMap, componentState.state.id).then((response) => {
-            if (ApiResponse.hasError(response))
-              return updateStateInError(response);
-
-            componentState.lastApiResponse = response;
-            componentState.filterValuesMap[x.param] = response.data;
-            if (response.data.length > 0)
-              componentState.filterSelectedValueMap[x.param] = response.data[0];
-            update(FiltersAndReportsState.clone(componentState));
-          });
-        });
+        componentState.metabaseUrl = metabaseUrlResponse.data;
+        return Promise.resolve();
       });
-    }, []);
+    };
 
-    useEffect(() => {
-      let dependentFilters = metabaseResource.getDependentFilters();
-      let reducedPromise = Promise.resolve();
-      if (dependentFilters.length !== 0) {
-        reducedPromise = _.reduce(dependentFilters, (result, filter) => result.then(() => {
-          if (!filter.isParentValueSelected(componentState.filterSelectedValueMap)) return Promise.resolve();
+    const loadDependentFilters = function () {
+      console.log("loadDependentFilters");
+      return _.reduce(metabaseResource.getDependentFilters(), (result, filter) => result.then(() => {
+        if (!filter.isParentValueSelected(componentState.filterSelectedValueMap)) return Promise.resolve();
 
-          return DataReadService.getEntities(filter, componentState.filterSelectedValueMap, componentState.state.id).then((response) => {
-            if (ApiResponse.hasError(response)) {
-              componentState.lastApiResponse = response;
-              return Promise.reject();
-            }
+        return DataReadService.getEntities(filter, componentState.filterSelectedValueMap, componentState.state.id).then((response) => {
+          if (ApiResponse.hasError(response))
+            return Promise.reject(`Server returned error with status code: ${response.status}`);
 
-            componentState.lastApiResponse = response;
-            componentState.filterValuesMap[filter.param] = response.data;
-            if (response.data.length > 0 && _.isNil(componentState.filterSelectedValueMap[filter.param])) {
-              componentState.filterSelectedValueMap[filter.param] = response.data[0];
-            }
-            return Promise.resolve();
-          });
-        }), Promise.resolve());
-      }
-      reducedPromise.then(() => {
-        let params = metabaseResource.createMetabaseFilterObject(componentState.state, componentState.filterSelectedValueMap, componentState.searchString);
-        return MetabaseDashboardService.getIframeResource(params, metabaseResource).then((metabaseUrlResponse) => {
-          if (ApiResponse.hasError(metabaseUrlResponse)) {
-            componentState.lastApiResponse = metabaseUrlResponse;
-            return Promise.reject();
+          componentState.filterValuesMap[filter.param] = response.data;
+          if (response.data.length > 0 && _.isNil(componentState.filterSelectedValueMap[filter.param])) {
+            componentState.filterSelectedValueMap[filter.param] = response.data[0];
           }
-
-          componentState.metabaseUrl = metabaseUrlResponse.data;
-          componentState.lastApiResponse = metabaseUrlResponse;
           return Promise.resolve();
         });
+      }), Promise.resolve());
+    };
+
+    const loadIndependentFilters = function () {
+      console.log("loadIndependentFilters");
+      return _.reduce(metabaseResource.getIndependentFilters(), (result, filter) =>
+        result.then(() => {
+          return DataReadService.getEntities(filter, componentState.filterSelectedValueMap, componentState.state.id).then((response) => {
+            if (ApiResponse.hasError(response))
+              return Promise.reject(`Server returned error with status code: ${response.status}`);
+
+            componentState.filterValuesMap[filter.param] = response.data;
+            if (response.data.length > 0)
+              componentState.filterSelectedValueMap[filter.param] = response.data[0];
+            return Promise.resolve();
+          });
+        }), Promise.resolve())
+    };
+
+    let deps = [metabaseResource.id, ...FiltersAndReportsState.getSelectedFilterIds(componentState)];
+    useEffect(() => {
+      console.log("USE EFFECT DEPENDENCIES", deps);
+      DataReadService.getState().then((stateResponse) => {
+        if (ApiResponse.hasError(stateResponse))
+          return Promise.reject(`Server returned error with status code: ${stateResponse.status}`);
+
+        componentState.state = stateResponse.data;
+        return loadIndependentFilters().then(() => loadDependentFilters()).then(() => loadMetabaseDashboard());
       }).then(() => {
         update(FiltersAndReportsState.clone(componentState));
       }).catch((error) => {
         console.log(error);
-        updateStateInError(componentState.lastApiResponse)
+        componentState.error = error;
+        update(componentState);
       });
-    }, [metabaseResource.id, componentState.state ? componentState.state.id : 0, ...FiltersAndReportsState.getSelectedFilterIds(componentState)]);
-
-    let view = ApiCallView.handleApiCall(componentState.lastApiResponse);
-    if (!_.isNil(view)) return view;
+    }, deps);
 
     return <>
       <Grid container spacing={3}>

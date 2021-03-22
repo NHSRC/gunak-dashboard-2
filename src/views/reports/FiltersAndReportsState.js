@@ -16,7 +16,6 @@ export default class FiltersAndReportsState {
   static clone(other) {
     let filtersAndReportsState = new FiltersAndReportsState();
     filtersAndReportsState.searchString = other.searchString;
-    filtersAndReportsState.lastApiResponse = other.lastApiResponse;
     filtersAndReportsState.metabaseUrl = other.metabaseUrl;
     filtersAndReportsState.state = other.state;
 
