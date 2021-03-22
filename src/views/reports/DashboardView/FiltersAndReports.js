@@ -14,6 +14,7 @@ import CircularProgress from "@material-ui/core/CircularProgress/CircularProgres
 import ApiCallView from "../../ApiCallView";
 import _ from "lodash";
 import PropTypes from 'prop-types';
+import {DashboardFilter} from "../MetabaseResources";
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -92,7 +93,6 @@ const FiltersAndReports = ({metabaseResource, ...rest}) => {
             componentState.lastApiResponse = response;
             componentState.filterValuesMap[filter.param] = response.data;
             if (response.data.length > 0 && _.isNil(componentState.filterSelectedValueMap[filter.param])) {
-              console.log("Nothing selected", filter.param);
               componentState.filterSelectedValueMap[filter.param] = response.data[0];
             }
             return Promise.resolve();
@@ -127,20 +127,20 @@ const FiltersAndReports = ({metabaseResource, ...rest}) => {
         {metabaseResource.topLevel && metabaseResource.filters.map((x) => {
           return <Grid item key={x.param}>
             <FormControl variant="outlined" className={classes.formControl}>
-              <InputLabel id={x.param}><b>{x.displayName}</b></InputLabel>
+              <InputLabel id={x.param}><b>{DashboardFilter.getDisplayName(x)}</b></InputLabel>
               <Select
                 labelId={`${x.param}-select`}
                 id={`${x.param}-select`}
                 value={FiltersAndReportsState.getSelectedId(componentState, x)}
                 onChange={(event) => handleChange(x, event)}
-                label={x.displayName}
+                label={DashboardFilter.getDisplayName(x)}
                 className={classes.formControlSelect}
               >{FiltersAndReportsState.getValues(componentState, x).map((y) => <MenuItem key={`program-${y.id}`} value={y.id}>{y.name}</MenuItem>)}
               </Select>
             </FormControl>
           </Grid>
         })}
-        {!metabaseResource.topLevel && metabaseResource.getDisplayLabels(componentState.filterSelectedValueMap).map((label, index) => {
+        {!metabaseResource.topLevel && metabaseResource.getDisplayLabels(componentState.searchString).map((label, index) => {
           return <Grid item key={`selected-filters-${index}`}>
             {label}
           </Grid>
