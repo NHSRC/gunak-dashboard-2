@@ -31,7 +31,7 @@ let createUnprotectedRoute = function (path, element) {
 const routes = <Router>
   {createProtectedRoute("/dashboard/account", <AccountView/>)}
   {/*{createProtectedRoute("/customers", <CustomerListView/>)}*/}
-  {createProtectedRoute("/", <DashboardView/>)}
+  {createProtectedRoute("/dashboard", <DashboardView/>)}
   {/*{createProtectedRoute("/app/products", <ProductListView/>)}*/}
   {createProtectedRoute("/dashboard/settings", <SettingsView/>)}
   {/*<Route path='*' element={<Redirect to="/404"/>}/>*/}
@@ -41,6 +41,9 @@ const routes = <Router>
                                              message={"You either tried non-existent URL or you came here by mistake."}/>)}
   {createUnprotectedRoute("/dashboard/noStateAccess", <ErrorView pageTitle={"No state access"} messageTitle={"Valid login. But no state access."}
                                                        message={"Please contact administrator and ask them to provide you access to your state."}/>)}
+  {<Route path="/" exact={true}>
+    <Redirect to="/dashboard"/>
+  </Route>}
   {/*<Route path='*' element={<Redirect to="/404"/>}/>*/}
 </Router>;
 
