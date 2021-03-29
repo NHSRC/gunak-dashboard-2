@@ -50,7 +50,7 @@ const DashboardBox = ({className, title, icon, description, isCurrent, searchPar
                 gutterBottom
                 variant="h6"
                 underline="always"
-              ><RRDLink to={`/app/dashboard?${searchParams}`}>{title}</RRDLink></Link>
+              ><RRDLink to={`/dashboard?${searchParams}`}>{title}</RRDLink></Link>
               <Typography
                 color="textPrimary"
                 variant="h5">{description}</Typography>

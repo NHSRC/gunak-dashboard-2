@@ -29,21 +29,18 @@ let createUnprotectedRoute = function (path, element) {
 };
 
 const routes = <Router>
-  {createProtectedRoute("/app/account", <AccountView/>)}
-  {createProtectedRoute("/app/customers", <CustomerListView/>)}
-  {createProtectedRoute("/app/dashboard", <DashboardView/>)}
-  {createProtectedRoute("/app/products", <ProductListView/>)}
-  {createProtectedRoute("/app/settings", <SettingsView/>)}
+  {createProtectedRoute("/dashboard/account", <AccountView/>)}
+  {/*{createProtectedRoute("/customers", <CustomerListView/>)}*/}
+  {createProtectedRoute("/", <DashboardView/>)}
+  {/*{createProtectedRoute("/app/products", <ProductListView/>)}*/}
+  {createProtectedRoute("/dashboard/settings", <SettingsView/>)}
   {/*<Route path='*' element={<Redirect to="/404"/>}/>*/}
-  {createUnprotectedRoute("/login", <LoginView/>)}
-  {createUnprotectedRoute("/register", <RegisterView/>)}
-  {createUnprotectedRoute("/404", <ErrorView pageTitle={"404"} messageTitle={"404: The page you are looking for isn’t here"}
+  {createUnprotectedRoute("/dashboard/login", <LoginView/>)}
+  {createUnprotectedRoute("/dashboard/register", <RegisterView/>)}
+  {createUnprotectedRoute("/dashboard/404", <ErrorView pageTitle={"404"} messageTitle={"404: The page you are looking for isn’t here"}
                                              message={"You either tried non-existent URL or you came here by mistake."}/>)}
-  {createUnprotectedRoute("/noStateAccess", <ErrorView pageTitle={"No state access"} messageTitle={"Valid login. But no state access."}
+  {createUnprotectedRoute("/dashboard/noStateAccess", <ErrorView pageTitle={"No state access"} messageTitle={"Valid login. But no state access."}
                                                        message={"Please contact administrator and ask them to provide you access to your state."}/>)}
-  {<Route path="/" exact={true}>
-    <Redirect to="/app/dashboard"/>
-  </Route>}
   {/*<Route path='*' element={<Redirect to="/404"/>}/>*/}
 </Router>;
 
@@ -54,7 +51,7 @@ function PrivateRoute({children, ...rest}) {
              return LoginService.isLoggedIn() ? (
                children
              ) : (
-               <Redirect to="/login"/>
+               <Redirect to="/dashboard/login"/>
              )
            }}
     />

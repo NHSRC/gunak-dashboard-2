@@ -56,7 +56,7 @@ const TopBar = ({
           className={classes.avatar}
           component={RouterLink}
           src={null}
-          to="/app/account"
+          to="/dashboard/account"
         />
         <Hidden lgUp>
           <IconButton

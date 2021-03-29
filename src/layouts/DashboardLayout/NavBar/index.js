@@ -7,12 +7,12 @@ import NavItem from './NavItem';
 
 const items = [
   {
-    href: '/app/dashboard',
+    href: '/dashboard',
     icon: BarChartIcon,
     title: 'NQAS'
   },
   {
-    href: '/app/account',
+    href: '/dashboard/account',
     icon: UserIcon,
     title: 'Account'
   }
@@ -60,7 +60,7 @@ const NavBar = ({onMobileClose, openMobile, user}) => {
           className={classes.avatar}
           component={RouterLink}
           src={null}
-          to="/app/account"
+          to="/dashboard/account"
         />
         <Typography
           className={classes.name}
