@@ -4,7 +4,7 @@ const Logo = (props) => {
   return (
     <img
       alt="Logo"
-      src="/static/gunak.png"
+      src="/dashboard/static/gunak.png"
       {...props}
     />
   );
