@@ -12,9 +12,15 @@ const ParamDisplayNames = {
   assessment_id: "Assessment System Id",
   department: "Department",
   area_of_concern: "Area of concern",
+  start_date: "Start date",
+  end_date: "End date"
 };
 
 export class DashboardFilter {
+  static DataTypes = {
+    date: "Date"
+  };
+
   static Program = new DashboardFilter({param: "assessment_tool_mode", resourceName: "assessmentToolMode"});
   static AssessmentTool = new DashboardFilter({
     param: "assessment_tool",
@@ -30,12 +36,27 @@ export class DashboardFilter {
     param: "assessment_id",
     singleValue: true
   });
+  static StartDate = new DashboardFilter({
+    param: "start_date",
+    singleValue: true,
+    dataType: DashboardFilter.DataTypes.date
+  });
+  static EndDate = new DashboardFilter({
+    param: "end_date",
+    singleValue: true,
+    dataType: DashboardFilter.DataTypes.date
+  });
 
-  constructor({param, dependentOn, resourceName, singleValue = false}) {
+  constructor({param, dependentOn, resourceName, singleValue = false, dataType}) {
     this.param = param;
     this.dependentOn = dependentOn;
     this.resourceName = resourceName;
     this.singleValue = singleValue;
+    this.dataType = dataType;
+  }
+
+  static isDateType(filter) {
+    return DashboardFilter.DataTypes.date === filter.dataType;
   }
 
   isIndependent() {
@@ -70,7 +91,15 @@ export class DashboardFilter {
 }
 
 class Dashboard {
-  constructor({id, name, filters = [DashboardFilter.Program, DashboardFilter.AssessmentTool, DashboardFilter.AssessmentType], height = '1000px', topLevel = true, boxData, independentOfState = false}) {
+  constructor({
+                id,
+                name,
+                filters = [DashboardFilter.Program, DashboardFilter.AssessmentTool, DashboardFilter.AssessmentType],
+                height = '1000px',
+                topLevel = true,
+                boxData,
+                independentOfState = false
+              }) {
     this.id = id;
     this.type = "dashboard";
     this.name = name;
@@ -98,8 +127,12 @@ class Dashboard {
     if (!_.isNil(state) && !this.independentOfState)
       params["state"] = state.name;
     this.filters.forEach(filter => {
-      if (!_.isNil(selectedFilterValues[filter.param]))
-        params[filter.param] = selectedFilterValues[filter.param].name;
+      if (!_.isNil(selectedFilterValues[filter.param])) {
+        if (DashboardFilter.isDateType(filter))
+          params[filter.param] = selectedFilterValues[filter.param];
+        else
+          params[filter.param] = selectedFilterValues[filter.param].name;
+      }
     });
     let urlSearchParams = new URLSearchParams(searchString);
     urlSearchParams.forEach((value, key) => {
@@ -133,7 +166,12 @@ class MetabaseResources {
     this.dashboards = [];
 
     let dashboardBoxData = new DashboardBoxData("ASSESSMENT DONE", "Count of assessments done in the state", <ImportExportIcon/>);
-    this.defaultDashboard = new Dashboard({id: 2, name: "main", filters: [DashboardFilter.Program], boxData: dashboardBoxData});
+    this.defaultDashboard = new Dashboard({
+      id: 2,
+      name: "main",
+      filters: [DashboardFilter.Program, DashboardFilter.StartDate, DashboardFilter.EndDate],
+      boxData: dashboardBoxData
+    });
     this.dashboards.push(this.defaultDashboard);
 
     this.dashboards.push(new Dashboard({id: 7, name: "assessmentList", topLevel: false, filters: []}));
