@@ -85,7 +85,7 @@ const FiltersAndReports = ({metabaseResource}) => {
               return Promise.reject(`Server returned error with status code: ${response.status}`);
 
             componentState.filterValuesMap[filter.param] = response.data;
-            if (response.data.length > 0)
+            if (response.data.length > 0 && _.isNil(componentState.filterSelectedValueMap[filter.param]))
               componentState.filterSelectedValueMap[filter.param] = response.data[0];
             return Promise.resolve();
           });

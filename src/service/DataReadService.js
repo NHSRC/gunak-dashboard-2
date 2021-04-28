@@ -11,10 +11,6 @@ export default class DataReadService {
     return getJson(filter.getUrl(filterValues, stateId), filter.resourceName);
   }
 
-  static getPrograms() {
-    return getJson(`/api/assessmentToolMode`, 'assessmentToolMode');
-  }
-
   static getAssessmentTools(stateId, programId) {
     return getJson(`/api/assessmentTool/search/findByStateAndAssessmentToolMode?stateId=${stateId}&assessmentToolModeId=${programId}`);
   }
