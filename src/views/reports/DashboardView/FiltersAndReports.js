@@ -97,7 +97,7 @@ const FiltersAndReports = ({metabaseResource}) => {
       }), Promise.resolve())
   };
 
-  let deps = [metabaseResource.id, ...FiltersAndReportsState.getSelectedFilterIds(componentState)];
+  let deps = [metabaseResource.id, ...FiltersAndReportsState.getSelectedFilterIds(metabaseResource, componentState)];
   useEffect(() => {
     console.log("USE EFFECT DEPENDENCIES", deps);
     DataReadService.getState().then((stateResponse) => {
@@ -127,7 +127,7 @@ const FiltersAndReports = ({metabaseResource}) => {
                 id={`${x.param}-date-picker`}
                 label=" "
                 type="date"
-                defaultValue={FiltersAndReportsState.getSelectedValue(componentState, x)}
+                defaultValue={FiltersAndReportsState.getSelectedDateValue(componentState, x)}
                 onChange={(event) => handleChange(x, event)}
                 className={classes.textField}
                 InputLabelProps={{

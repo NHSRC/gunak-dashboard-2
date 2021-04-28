@@ -4,6 +4,7 @@ import ArrowUpwardIcon from '@material-ui/icons/ArrowUpward';
 import CloudDownloadIcon from '@material-ui/icons/CloudDownload';
 import ImportExportIcon from '@material-ui/icons/ImportExport';
 import React from "react";
+import moment from "moment";
 
 const ParamDisplayNames = {
   assessment_tool: "Assessment Tool",
@@ -15,6 +16,8 @@ const ParamDisplayNames = {
   start_date: "Start date",
   end_date: "End date"
 };
+
+export const DateFormat = "YYYY-MM-DD";
 
 export class DashboardFilter {
   static DataTypes = {
@@ -39,20 +42,23 @@ export class DashboardFilter {
   static StartDate = new DashboardFilter({
     param: "start_date",
     singleValue: true,
-    dataType: DashboardFilter.DataTypes.date
+    dataType: DashboardFilter.DataTypes.date,
+    defaultValue: moment().subtract(6, 'months').format(DateFormat)
   });
   static EndDate = new DashboardFilter({
     param: "end_date",
     singleValue: true,
-    dataType: DashboardFilter.DataTypes.date
+    dataType: DashboardFilter.DataTypes.date,
+    defaultValue: moment().format(DateFormat)
   });
 
-  constructor({param, dependentOn, resourceName, singleValue = false, dataType}) {
+  constructor({param, dependentOn, resourceName, singleValue = false, dataType, defaultValue}) {
     this.param = param;
     this.dependentOn = dependentOn;
     this.resourceName = resourceName;
     this.singleValue = singleValue;
     this.dataType = dataType;
+    this.defaultValue = defaultValue;
   }
 
   static isDateType(filter) {
@@ -127,7 +133,10 @@ class Dashboard {
     if (!_.isNil(state) && !this.independentOfState)
       params["state"] = state.name;
     this.filters.forEach(filter => {
-      if (!_.isNil(selectedFilterValues[filter.param])) {
+      if (_.isNil(selectedFilterValues[filter.param])) {
+        if (DashboardFilter.isDateType(filter))
+          params[filter.param] = filter.defaultValue;
+      } else {
         if (DashboardFilter.isDateType(filter))
           params[filter.param] = selectedFilterValues[filter.param];
         else
@@ -150,6 +159,10 @@ class Dashboard {
         labels.push(`${ParamDisplayNames[key]}: ${value}`);
     });
     return labels;
+  }
+
+  isParamOfDateType(param) {
+    return _.some(this.filters, (x) => x.param === param && DashboardFilter.isDateType(x))
   }
 }
 

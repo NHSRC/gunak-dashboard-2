@@ -1,5 +1,5 @@
 import _ from "lodash";
-import MetabaseResources, {DashboardFilter} from "./MetabaseResources";
+import MetabaseResources, {DashboardFilter, DateFormat} from "./MetabaseResources";
 import moment from 'moment';
 
 export default class FiltersAndReportsState {
@@ -32,12 +32,12 @@ export default class FiltersAndReportsState {
     return value.id;
   }
 
-  static getSelectedValue(state, filter) {
+  static getSelectedDateValue(state, filter) {
     let value = state.filterSelectedValueMap[filter.param];
     if (_.isNil(value))
-      return "";
+      return filter.defaultValue;
 
-    return moment(value).format("YYYY-MM-DD");
+    return moment(value).format(DateFormat);
   }
 
   static getValues(state, filter) {
@@ -66,9 +66,15 @@ export default class FiltersAndReportsState {
     return thisObject.filterSelectedValueMap[filter.param];
   }
 
-  static getSelectedFilterIds(thisObject) {
+  static getSelectedFilterIds(metabaseResource, thisObject) {
     return MetabaseResources.getUniqueFilterParams().map((param) => {
-      return thisObject.filterSelectedValueMap[param] ? thisObject.filterSelectedValueMap[param].id : 0;
+      if (thisObject.filterSelectedValueMap[param] && metabaseResource.isParamOfDateType(param)) {
+        return thisObject.filterSelectedValueMap[param];
+      } else if (!thisObject.filterSelectedValueMap[param] && metabaseResource.isParamOfDateType(param)) {
+        return "";
+      } else {
+        return thisObject.filterSelectedValueMap[param] ? thisObject.filterSelectedValueMap[param].id : 0;
+      }
     });
   }
 }
