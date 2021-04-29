@@ -10,12 +10,4 @@ export default class DataReadService {
   static getEntities(filter, filterValues, stateId) {
     return getJson(filter.getUrl(filterValues, stateId), filter.resourceName);
   }
-
-  static getAssessmentTools(stateId, programId) {
-    return getJson(`/api/assessmentTool/search/findByStateAndAssessmentToolMode?stateId=${stateId}&assessmentToolModeId=${programId}`);
-  }
-
-  static getAssessmentTypes(programId) {
-    return getJson(`/api/assessmentType/search/findAllByAssessmentToolModeId?assessmentToolModeId=${programId}`, 'assessmentType');
-  }
 }

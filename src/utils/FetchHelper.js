@@ -25,7 +25,11 @@ export function getJson(url, embeddedObjectName) {
       return response.json();
     })
     .then((obj) => {
-      apiResponse.data = obj["_embedded"] ? obj["_embedded"][embeddedObjectName] : obj;
+      let data = obj["_embedded"] ? obj["_embedded"][embeddedObjectName] : obj;
+      if (Array.isArray(data))
+        apiResponse.data = _.filter(data, (x) => !x.inactive);
+      else
+        apiResponse.data = data;
       return Promise.resolve(apiResponse);
     });
 }

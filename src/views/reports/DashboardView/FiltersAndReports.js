@@ -122,7 +122,6 @@ const FiltersAndReports = ({metabaseResource}) => {
       }
       <Grid container spacing={3}>
         {metabaseResource.topLevel && metabaseResource.filters.map((x) => {
-          console.log("x.dataType", x);
           return <Grid item key={x.param}>
             <FormControl variant="outlined" className={classes.formControl}>
               <InputLabel id={x.param}><b>{DashboardFilter.getDisplayName(x)}</b></InputLabel>
