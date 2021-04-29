@@ -11,6 +11,7 @@ export default class FiltersAndReportsState {
   static newInstance(searchString) {
     let filtersAndReportsState = new FiltersAndReportsState();
     filtersAndReportsState.searchString = searchString;
+    filtersAndReportsState.validationResult = {success: true};
     return filtersAndReportsState;
   }
 
@@ -23,6 +24,7 @@ export default class FiltersAndReportsState {
     filtersAndReportsState.filterValuesMap = {...other.filterValuesMap};
     filtersAndReportsState.filterSelectedValueMap = {...other.filterSelectedValueMap};
     filtersAndReportsState.metabaseResourceId = other.metabaseResourceId;
+    filtersAndReportsState.validationResult = {...other.validationResult};
     return filtersAndReportsState;
   }
 
@@ -47,8 +49,13 @@ export default class FiltersAndReportsState {
 
   static setValue(thisObject, filter, value, metabaseResource) {
     if (DashboardFilter.isDateType(filter)) {
-      thisObject.filterSelectedValueMap[filter.param] = value;
+      let validationResult = metabaseResource.customValidation(thisObject.filterSelectedValueMap, filter.param, value);
+      thisObject.validationResult = validationResult;
+      if (validationResult.success) {
+        thisObject.filterSelectedValueMap[filter.param] = value;
+      }
     } else {
+      thisObject.validationResult = {success: true};
       let entityId = parseInt(value);
       thisObject.filterSelectedValueMap[filter.param] = _.find(thisObject.filterValuesMap[filter.param], (x) => x.id === entityId);
 

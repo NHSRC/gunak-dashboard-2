@@ -100,7 +100,7 @@ class Dashboard {
   constructor({
                 id,
                 name,
-                filters = [DashboardFilter.Program, DashboardFilter.AssessmentTool, DashboardFilter.AssessmentType],
+                filters = [DashboardFilter.Program, DashboardFilter.AssessmentTool, DashboardFilter.AssessmentType, DashboardFilter.StartDate, DashboardFilter.EndDate],
                 height = '1000px',
                 topLevel = true,
                 boxData,
@@ -163,6 +163,15 @@ class Dashboard {
 
   isParamOfDateType(param) {
     return _.some(this.filters, (x) => x.param === param && DashboardFilter.isDateType(x))
+  }
+
+  customValidation(filterValues, param, value) {
+    if (param === "start_date" && moment(filterValues["end_date"]).isBefore(moment(value))) {
+      return {success: false, message: "Start date cannot be after end date"};
+    } else if (param === "end_date" && moment(filterValues["start_date"]).isAfter(moment(value))) {
+      return {success: false, message: "End date cannot be before start date"};
+    }
+    return {success: true};
   }
 }
 
