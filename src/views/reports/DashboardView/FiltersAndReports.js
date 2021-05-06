@@ -132,6 +132,11 @@ const FiltersAndReports = ({metabaseResource}) => {
                   type="date"
                   defaultValue={FiltersAndReportsState.getSelectedDateValue(componentState, x)}
                   onChange={(event) => handleChange(x, event)}
+                  onKeyPress={(e) => {
+                    e.preventDefault();
+                    return false;
+                  }
+                  }
                   className={classes.textField}
                   InputLabelProps={{
                     shrink: true,
