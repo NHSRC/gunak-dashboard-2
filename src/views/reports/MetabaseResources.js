@@ -148,6 +148,10 @@ class Dashboard {
       if (key !== "name" && key !== "state")
         params[key] = value;
     });
+    Object.keys(params).forEach(paramKey => {
+      if (_.isEmpty(params[paramKey]) && !_.isNil(localStorage.getItem(paramKey)))
+        params[paramKey] = localStorage.getItem(paramKey);
+    });
     return params;
   }
 

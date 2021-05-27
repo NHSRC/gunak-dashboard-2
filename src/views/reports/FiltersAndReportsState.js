@@ -36,8 +36,10 @@ export default class FiltersAndReportsState {
 
   static getSelectedDateValue(state, filter) {
     let value = state.filterSelectedValueMap[filter.param];
-    if (_.isNil(value))
+    if (_.isNil(value)) {
+      localStorage.setItem(filter.param, filter.defaultValue);
       return filter.defaultValue;
+    }
 
     return moment(value).format(DateFormat);
   }
@@ -53,6 +55,7 @@ export default class FiltersAndReportsState {
       thisObject.validationResult = validationResult;
       if (validationResult.success) {
         thisObject.filterSelectedValueMap[filter.param] = value;
+        localStorage.setItem(filter.param, value);
       }
     } else {
       thisObject.validationResult = {success: true};
