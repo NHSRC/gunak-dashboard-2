@@ -9,8 +9,7 @@ import FiltersAndReportsState from "../FiltersAndReportsState";
 import ApiResponse from "../../../model/ApiResponse";
 import MetabaseDashboardService from "../../../service/MetabaseDashboardService";
 import {useLocation} from "react-router";
-import {Grid, Typography} from "@material-ui/core";
-import CircularProgress from "@material-ui/core/CircularProgress/CircularProgress";
+import {Box, Button, Grid, LinearProgress} from "@material-ui/core";
 import _ from "lodash";
 import PropTypes from 'prop-types';
 import {DashboardFilter} from "../MetabaseResources";
@@ -20,6 +19,10 @@ import {Alert} from "@material-ui/lab";
 const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1
+  },
+  filtersContainer: {
+    backgroundColor: 'white',
+    padding: 10
   },
   formControl: {
     margin: theme.spacing(1),
@@ -38,88 +41,92 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
     width: 200,
+  },
+  updateReport: {
+    marginTop: 25,
+    marginBottom: 25,
   }
 }));
 
+const loadMetabaseDashboard = function (metabaseResource, componentState) {
+  console.log("loadMetabaseDashboard");
+  componentState.loading = true;
+  let params = metabaseResource.createMetabaseFilterObject(componentState.state, componentState.filterSelectedValueMap, componentState.searchString);
+  return MetabaseDashboardService.getIframeResource(params, metabaseResource).then((metabaseUrlResponse) => {
+    if (ApiResponse.hasError(metabaseUrlResponse)) {
+      componentState.errorMessage = `Server returned error with status code: ${metabaseUrlResponse.status}`;
+      return;
+    }
+    componentState.metabaseUrl = metabaseUrlResponse.data;
+  });
+};
+
+function loadFilters(filter, componentState) {
+  return DataReadService.getEntities(filter, componentState.filterSelectedValueMap, componentState.state.id).then((response) => {
+    if (ApiResponse.hasError(response))
+      return Promise.reject(`Server returned error with status code: ${response.status}`);
+
+    componentState.filterValuesMap[filter.param] = response.data;
+    if (response.data.length > 0 && _.isNil(componentState.filterSelectedValueMap[filter.param])) {
+      componentState.filterSelectedValueMap[filter.param] = response.data[0];
+    }
+    return Promise.resolve();
+  });
+}
+
+const loadDependentFilters = function (metabaseResource, componentState) {
+  console.log("loadDependentFilters");
+  return _.reduce(metabaseResource.getDependentFilters(), (result, filter) => result.then(() => {
+    if (!filter.isParentValueSelected(componentState.filterSelectedValueMap)) return Promise.resolve();
+    return loadFilters(filter, componentState);
+  }), Promise.resolve());
+};
+
+const loadIndependentFilters = function (metabaseResource, componentState) {
+  console.log("loadIndependentFilters");
+  return _.reduce(metabaseResource.getIndependentFilters(),
+    (result, filter) => result.then(() => loadFilters(filter, componentState)),
+    Promise.resolve());
+};
+
 const FiltersAndReports = ({metabaseResource}) => {
-    const classes = useStyles();
+  const classes = useStyles();
 
-    const handleChange = (filter, event) => {
-      FiltersAndReportsState.setValue(componentState, filter, event.target.value, metabaseResource);
-      update(FiltersAndReportsState.clone(componentState));
-    };
+  const handleChange = (filter, event) => {
+    FiltersAndReportsState.setValue(componentState, filter, event.target.value, metabaseResource);
+    updateState();
+  };
 
-    let searchString = useLocation().search;
-    const [componentState, update] = useState(FiltersAndReportsState.newInstance(searchString));
+  const updateState = function () {
+    update(FiltersAndReportsState.clone(componentState));
+  }
 
-    const loadMetabaseDashboard = function () {
-      console.log("loadMetabaseDashboard");
-      let params = metabaseResource.createMetabaseFilterObject(componentState.state, componentState.filterSelectedValueMap, componentState.searchString);
-      return MetabaseDashboardService.getIframeResource(params, metabaseResource).then((metabaseUrlResponse) => {
-        if (ApiResponse.hasError(metabaseUrlResponse))
-          return Promise.reject(`Server returned error with status code: ${metabaseUrlResponse.status}`);
+  let searchString = useLocation().search;
+  const [componentState, update] = useState(FiltersAndReportsState.newInstance(searchString));
 
-        componentState.metabaseUrl = metabaseUrlResponse.data;
-        return Promise.resolve();
-      });
-    };
+  let deps = [metabaseResource.id, ...FiltersAndReportsState.getSelectedFilterIds(metabaseResource, componentState)];
+  useEffect(() => {
+    console.log("USE EFFECT DEPENDENCIES", deps);
+    DataReadService.getState().then((stateResponse) => {
+      if (ApiResponse.hasError(stateResponse))
+        return Promise.reject(`Server returned error with status code: ${stateResponse.status}`);
 
-    const loadDependentFilters = function () {
-      console.log("loadDependentFilters");
-      return _.reduce(metabaseResource.getDependentFilters(), (result, filter) => result.then(() => {
-        if (!filter.isParentValueSelected(componentState.filterSelectedValueMap)) return Promise.resolve();
+      componentState.state = stateResponse.data;
+      return loadIndependentFilters(metabaseResource, componentState).then(() => loadDependentFilters(metabaseResource, componentState));
+    }).then(() => {
+      updateState();
+    }).catch((error) => {
+      console.log(error);
+      componentState.errorMessage = error.message;
+      updateState();
+    });
+  }, deps);
 
-        return DataReadService.getEntities(filter, componentState.filterSelectedValueMap, componentState.state.id).then((response) => {
-          if (ApiResponse.hasError(response))
-            return Promise.reject(`Server returned error with status code: ${response.status}`);
-
-          componentState.filterValuesMap[filter.param] = response.data;
-          if (response.data.length > 0 && _.isNil(componentState.filterSelectedValueMap[filter.param])) {
-            componentState.filterSelectedValueMap[filter.param] = response.data[0];
-          }
-          return Promise.resolve();
-        });
-      }), Promise.resolve());
-    };
-
-    const loadIndependentFilters = function () {
-      console.log("loadIndependentFilters");
-      return _.reduce(metabaseResource.getIndependentFilters(), (result, filter) =>
-        result.then(() => {
-          return DataReadService.getEntities(filter, componentState.filterSelectedValueMap, componentState.state.id).then((response) => {
-            if (ApiResponse.hasError(response))
-              return Promise.reject(`Server returned error with status code: ${response.status}`);
-
-            componentState.filterValuesMap[filter.param] = response.data;
-            if (response.data.length > 0 && _.isNil(componentState.filterSelectedValueMap[filter.param]))
-              componentState.filterSelectedValueMap[filter.param] = response.data[0];
-            return Promise.resolve();
-          });
-        }), Promise.resolve())
-    };
-
-    let deps = [metabaseResource.id, ...FiltersAndReportsState.getSelectedFilterIds(metabaseResource, componentState)];
-    useEffect(() => {
-      console.log("USE EFFECT DEPENDENCIES", deps);
-      DataReadService.getState().then((stateResponse) => {
-        if (ApiResponse.hasError(stateResponse))
-          return Promise.reject(`Server returned error with status code: ${stateResponse.status}`);
-
-        componentState.state = stateResponse.data;
-        return loadIndependentFilters().then(() => loadDependentFilters()).then(() => loadMetabaseDashboard());
-      }).then(() => {
-        update(FiltersAndReportsState.clone(componentState));
-      }).catch((error) => {
-        console.log(error);
-        componentState.error = error;
-        update(componentState);
-      });
-    }, deps);
-
-    return <>
-      {componentState.validationResult && !componentState.validationResult.success &&
-      <Alert severity="warning">{componentState.validationResult.message}</Alert>
-      }
+  return <>
+    {componentState.validationResult && !componentState.validationResult.success &&
+    <Alert severity="warning">{componentState.validationResult.message}</Alert>
+    }
+    <Box className={classes.filtersContainer}>
       <Grid container spacing={3}>
         {metabaseResource.topLevel && metabaseResource.filters.map((x) => {
           return <Grid item key={x.param}>
@@ -161,19 +168,26 @@ const FiltersAndReports = ({metabaseResource}) => {
           </Grid>
         })}
       </Grid>
-      {(!_.isNil(componentState.metabaseUrl)) ?
-        <Grid container>
-          <iframe src={componentState.metabaseUrl} title='Metabase' style={{border: 'none', width: '100%', height: metabaseResource.height}} onLoad={() => {
-          }}/>
-        </Grid>
-        : <div><Typography
-          color="textPrimary"
-          gutterBottom
-          variant="h2"
-        >Loading data....</Typography><CircularProgress/></div>}
-    </>
-  }
-;
+    </Box>
+    <Box justifyContent="center" display="flex" className={classes.updateReport}>
+      <Button variant="contained" color="primary" size="large"
+              onClick={() => {
+                loadMetabaseDashboard(metabaseResource, componentState).then(updateState).catch((error) => {
+                  componentState.errorMessage = error.message;
+                  updateState();
+                });
+                updateState();
+              }}>{_.isNil(componentState.metabaseUrl) ? "Run Report" : "Update Report"}</Button></Box>
+    {componentState.loading && <LinearProgress/>}
+    {!_.isNil(componentState.metabaseUrl) &&
+    <Grid container>
+      <iframe src={componentState.metabaseUrl} title='Metabase' style={{border: 'none', width: '100%', height: metabaseResource.height}} onLoad={() => {
+        componentState.loading = false;
+        updateState();
+      }}/>
+    </Grid>}
+  </>
+};
 
 FiltersAndReports.propTypes = {
   metabaseResource: PropTypes.object.isRequired

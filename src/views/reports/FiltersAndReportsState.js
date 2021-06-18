@@ -25,6 +25,7 @@ export default class FiltersAndReportsState {
     filtersAndReportsState.filterSelectedValueMap = {...other.filterSelectedValueMap};
     filtersAndReportsState.metabaseResourceId = other.metabaseResourceId;
     filtersAndReportsState.validationResult = {...other.validationResult};
+    filtersAndReportsState.loading = other.loading;
     return filtersAndReportsState;
   }
 
