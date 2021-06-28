@@ -7,6 +7,12 @@ export default class DataReadService {
     return getJson(`/api/state/${user.getStateId()}`);
   }
 
+  static getFacilityView(){
+    const queryParams = new URLSearchParams(window.location.search);
+    const ninId = queryParams.get('ninId');
+    return getJson(`/api/facility/assessments?registryUniqueId=${ninId}`);
+  }
+
   static getEntities(filter, filterValues, stateId) {
     return getJson(filter.getUrl(filterValues, stateId), filter.resourceName);
   }

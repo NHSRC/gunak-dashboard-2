@@ -9,6 +9,7 @@ import LoginView from 'src/views/auth/LoginView';
 import ErrorView from 'src/views/errors/ErrorView';
 import ProductListView from 'src/views/product/ProductListView';
 import RegisterView from 'src/views/auth/RegisterView';
+import FacilityView from 'src/views/facilityView';
 import SettingsView from 'src/views/settings/SettingsView';
 import LoginService from "./service/LoginService";
 
@@ -30,6 +31,7 @@ let createUnprotectedRoute = function (path, element) {
 
 const routes = <Router>
   {createProtectedRoute("/dashboard/account", <AccountView/>)}
+  {createProtectedRoute('/dashboard/facilityView', <FacilityView />)}
   {/*{createProtectedRoute("/customers", <CustomerListView/>)}*/}
   {createProtectedRoute("/dashboard", <DashboardView/>)}
   {/*{createProtectedRoute("/app/products", <ProductListView/>)}*/}
