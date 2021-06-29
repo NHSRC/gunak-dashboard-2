@@ -14,7 +14,7 @@ import SettingsView from 'src/views/settings/SettingsView';
 import LoginService from "./service/LoginService";
 
 let createProtectedRoute = function (path, element) {
-  return <PrivateRoute path={path}>
+  return <PrivateRoute exact path={path}>
     <DashboardLayout>
       {element}
     </DashboardLayout>
