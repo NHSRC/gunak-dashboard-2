@@ -30,11 +30,11 @@ export default function StickyHeadTable({ rows }) {
             <TableHead>
               <TableRow>
                 <TableCell> Assessment Number </TableCell>
-                <TableCell> Assessment Tool Name </TableCell>
-                <TableCell> Assessment Tool Type Name </TableCell>
+                <TableCell> Assessment Tool </TableCell>
+                <TableCell> Assessment Type </TableCell>
                 <TableCell>Start date</TableCell>
                 <TableCell>End date</TableCell>
-                <TableCell>View Assessment</TableCell>
+                <TableCell>Action</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
