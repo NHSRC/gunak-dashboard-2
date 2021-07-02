@@ -1,13 +1,11 @@
 import React from 'react';
-import {BrowserRouter as Router, Redirect, Route} from 'react-router-dom';
+import {HashRouter as Router, Redirect, Route} from 'react-router-dom';
 import DashboardLayout from 'src/layouts/DashboardLayout';
 import MainLayout from 'src/layouts/MainLayout';
 import AccountView from 'src/views/account/AccountView';
-import CustomerListView from 'src/views/customer/CustomerListView';
 import DashboardView from 'src/views/reports/DashboardView';
 import LoginView from 'src/views/auth/LoginView';
 import ErrorView from 'src/views/errors/ErrorView';
-import ProductListView from 'src/views/product/ProductListView';
 import RegisterView from 'src/views/auth/RegisterView';
 import FacilityView from 'src/views/facilityView';
 import SettingsView from 'src/views/settings/SettingsView';
