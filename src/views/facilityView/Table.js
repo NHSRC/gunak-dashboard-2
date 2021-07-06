@@ -16,15 +16,20 @@ const useStyles = makeStyles({
   },
   container: {
     maxHeight: 440,
-    marginTop: 100,
+    marginTop: 10,
   },
+  tableHeading:{
+    marginTop: 50,
+    textAlign:"center"
+  }
 });
 
 export default function StickyHeadTable({ rows }) {
   const classes = useStyles();
   if (!_.isEmpty(rows)) {
     return (
-      <Paper className={classes.root}>
+      <div> <h3 className={classes.tableHeading}>Assessment done for this facility</h3>
+        <Paper className={classes.root}>
         <TableContainer className={classes.container}>
           <Table stickyHeader aria-label="sticky table">
             <TableHead>
@@ -69,6 +74,7 @@ export default function StickyHeadTable({ rows }) {
           </Table>
         </TableContainer>
       </Paper>
+      </div>
     );
   }
   return null;

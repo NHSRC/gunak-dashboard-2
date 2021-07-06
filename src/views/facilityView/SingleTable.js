@@ -11,14 +11,21 @@ import Paper from '@material-ui/core/Paper';
 const useStyles = makeStyles({
 
   tableContainer: {
-    marginTop: 20,
- }
+    marginTop: 10,
+ },
+  tableHeading:{
+    marginTop: 30,
+    textAlign:"center"
+  }
 });
 export default function BasicTable(facility) {
   const classes = useStyles();
   return (
+    <div> <h3 className={classes.tableHeading}>Facility details</h3>
     <TableContainer component={Paper} className={classes.tableContainer}>
+
       <Table aria-label="simple table">
+
         <TableHead>
           <TableRow>
             <TableCell >Facility Name</TableCell>
@@ -41,5 +48,6 @@ export default function BasicTable(facility) {
         </TableBody>
       </Table>
     </TableContainer>
+    </div>
   );
 }
