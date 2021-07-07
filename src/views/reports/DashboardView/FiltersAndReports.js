@@ -8,7 +8,7 @@ import DataReadService from "../../../service/DataReadService";
 import FiltersAndReportsState from "../FiltersAndReportsState";
 import ApiResponse from "../../../model/ApiResponse";
 import MetabaseDashboardService from "../../../service/MetabaseDashboardService";
-import {useLocation} from "react-router";
+import {useHistory, useLocation} from "react-router";
 import {Box, Button, Grid, LinearProgress} from "@material-ui/core";
 import _ from "lodash";
 import PropTypes from 'prop-types';
@@ -102,7 +102,13 @@ const FiltersAndReports = ({metabaseResource}) => {
   }
 
   let searchString = useLocation().search;
+  const history = useHistory();
   const [componentState, update] = useState(FiltersAndReportsState.newInstance(searchString));
+  const [intialState, updateInitialState] = useState(FiltersAndReportsState.newInstance(searchString));
+
+  history.listen(() => {
+    update(intialState);
+  });
 
   let deps = [metabaseResource.id, ...FiltersAndReportsState.getSelectedFilterIds(metabaseResource, componentState)];
   useEffect(() => {
@@ -121,6 +127,7 @@ const FiltersAndReports = ({metabaseResource}) => {
       updateState();
     });
   }, deps);
+
 
   return <>
     {componentState.validationResult && !componentState.validationResult.success &&
