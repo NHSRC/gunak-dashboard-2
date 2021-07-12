@@ -177,14 +177,23 @@ const FiltersAndReports = ({metabaseResource}) => {
       </Grid>
     </Box>
     <Box justifyContent="center" display="flex" className={classes.updateReport}>
-      <Button variant="contained" color="primary" size="large"
-              onClick={() => {
-                loadMetabaseDashboard(metabaseResource, componentState).then(updateState).catch((error) => {
-                  componentState.errorMessage = error.message;
-                  updateState();
-                });
-                updateState();
-              }}>{_.isNil(componentState.metabaseUrl) ? "Run Report" : "Update Report"}</Button></Box>
+      { (metabaseResource.topLevel == false) ?
+        () => {
+          loadMetabaseDashboard(metabaseResource, componentState).catch((error) => {
+            componentState.errorMessage = error.message;
+            updateState();
+          });
+        }
+        : <Button variant="contained" color="primary" size="large"
+                  onClick={() => {
+                    loadMetabaseDashboard(metabaseResource, componentState).then(updateState).catch((error) => {
+                      componentState.errorMessage = error.message;
+                      updateState();
+                    });
+                    updateState();
+                  }}>{_.isNil(componentState.metabaseUrl) ? "Run Report" : "Update Report"}</Button>
+      }
+      </Box>
     {componentState.loading && <LinearProgress/>}
     {!_.isNil(componentState.metabaseUrl) &&
     <Grid container>
