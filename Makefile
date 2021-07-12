@@ -21,3 +21,6 @@ deploy-nhsrc-prod: build-deployable
 
 deploy-to-local: build-deployable
 	rm -rf ../facilities-assessment-server/dashboard/* && cp -r build/* ../facilities-assessment-server/dashboard/
+
+start-local-deployed:
+	open https://localhost:6002/dashboard/index.html
